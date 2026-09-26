@@ -17,9 +17,7 @@ import LocationOnRoundedIcon from "@mui/icons-material/LocationOnRounded";
 import BookmarkRoundedIcon from "@mui/icons-material/BookmarkRounded";
 import BookmarkBorderRoundedIcon from "@mui/icons-material/BookmarkBorderRounded";
 import PhotoCameraRoundedIcon from "@mui/icons-material/PhotoCameraRounded";
-import StarRoundedIcon from "@mui/icons-material/StarRounded";
 import VerifiedRoundedIcon from "@mui/icons-material/VerifiedRounded";
-import ChatBubbleOutlineRoundedIcon from "@mui/icons-material/ChatBubbleOutlineRounded";
 
 export interface PropertyMetric {
   /** برچسب متریک، مثل «متراژ»، «اتاق» یا «طبقه» */
@@ -69,7 +67,7 @@ export interface PropertyFileCardProps {
  * کارت نمایش یک فایل ملکی (آپارتمان، ویلا، تجاری و ...)
  * مطابق تم بصری پروژه (رنگ‌ها، تایپوگرافی و شعاع گوشه‌ها) ساخته شده است.
  */
-export default function PropertyFileCard({
+export default function CardFile({
   imageUrl,
   imageAlt = "",
   badgeLabel,
@@ -85,7 +83,6 @@ export default function PropertyFileCard({
   isVerified = false,
   initialBookmarked = false,
   onBookmarkToggle,
-  onChatClick,
   onDetailsClick,
 }: PropertyFileCardProps) {
   const [bookmarked, setBookmarked] = React.useState(initialBookmarked);
