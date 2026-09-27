@@ -6,7 +6,7 @@ import {
   ToggleButton,
   ToggleButtonGroup,
 } from "@mui/material";
-
+import FilterListIcon from '@mui/icons-material/FilterList';
 export type SortValue = "newest" | "cheapest" | "expensive" | "popular";
 export type ViewValue = "list" | "grid";
 
@@ -120,6 +120,7 @@ export default function FileToolbar({
             gap: 1.5,
           }}
         >
+          <FilterListIcon color="primary" />
           <Typography
             variant="body2"
             sx={{ color: "text.secondary", whiteSpace: "nowrap" }}
