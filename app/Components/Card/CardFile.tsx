@@ -325,7 +325,7 @@ export default function CardFile({
             display: "grid",
             gridTemplateColumns: "repeat(3, 1fr)",
             gap: 0.5,
-            bgcolor: "background.paper",
+            bgcolor: "#F1F5F9",
             borderRadius: "8px",
             p: 1,
             textAlign: "center",

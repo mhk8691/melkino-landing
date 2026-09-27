@@ -115,8 +115,6 @@ export type PropertyType = {
 
     images: (string | File)[]
 
-
-
     description: string
 
     internalNote: string
@@ -124,7 +122,6 @@ export type PropertyType = {
 
 
     // فیلدهای مخصوص «آگهی»
-
     buildYear?: string
 
     adTone?: string
@@ -138,7 +135,4 @@ export type PropertyType = {
     contactPhone?: string
 
     toneOfTheAd?: string
-
-
-
 }

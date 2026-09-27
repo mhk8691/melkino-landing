@@ -44,9 +44,10 @@ export const theme = createTheme({
     },
 
     background: {
-      default: '#FFFFFF',
-      paper: '#EFEEEC',
+      default: '#FAF8FF',
+      paper: '#FFFFFF',
       border: '#D4D4D2',
+      
     },
 
     text: {

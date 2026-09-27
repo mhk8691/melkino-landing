@@ -1,10 +1,9 @@
 "use client";
 
 import CardFile from "./Components/Card/CardFile";
+import Sort from "./Components/Sort/Sort";
 import { PropertyType } from "./Core/types";
 
-
-// نمونه فایل ملکی (Property File)
 export const propertyItem: PropertyType = {
   id: 101,
   propertyType: "آپارتمان",
@@ -43,7 +42,8 @@ export const propertyItem: PropertyType = {
     "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=600&q=80",
     "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80",
   ],
-  description: "آپارتمان سوپرلوکس ۱۶۵ متری تک‌واحدی، نورگیری عالی از جنوب و شمال.",
+  description:
+    "آپارتمان سوپرلوکس ۱۶۵ متری تک‌واحدی، نورگیری عالی از جنوب و شمال.",
   internalNote: "مالک فروشنده واقعی است و تخفیف جزئی پای معامله می‌دهد.",
   buildYear: "۱۳۹۹",
   advisorName: "مهندس اخوان",
@@ -51,7 +51,6 @@ export const propertyItem: PropertyType = {
   contactPhone: "02122001122",
 };
 
-// نمونه درخواست ملک (Property Request)
 export const requestItem: PropertyType = {
   id: 202,
   propertyType: "آپارتمان",
@@ -99,9 +98,61 @@ export const requestItem: PropertyType = {
   internalNote: "بودجه نقد و تایید شده است.",
 };
 
+export const SAMPLE_PROPERTY = {
+  id: 1,
+  status: 'فعال',
+  propertyType: 'آپارتمان',
+  contractType: 'فروش',
+  documentType: 'تک برگ',
+  city: 'تهران',
+  district: 'منطقه ۲',
+  neighborhood: 'سعادت‌آباد',
+  address: 'خیابان علامه شمالی، کوچه ۱۲، پلاک ۴',
+  area: 120,
+  totalPrice: 8500000000,
+  pricePerMeter: 70833333,
+  roomCount: 2,
+  occupancyStatus: 'تخلیه',
+  bathroom: 'ایرانی و فرنگی',
+  heating: 'پکیج',
+  cooling: 'اسپلیت',
+  flooring: 'سرامیک',
+  facade: 'سنگ',
+  totalFloor: 6,
+  direction: 'شمالی',
+  amenities: ['آسانسور', 'پارکینگ', 'انباری', 'بالکن'],
+  ownerName: 'علی رضایی',
+  ownerPhone: '09121234567',
+  ownerPhone2: '02188451234',
+  ownerJob: 'مهندس',
+  description: 'واحد نوساز، نور عالی، نزدیک مترو و مراکز خرید.',
+  internalNote: 'مالک عجله برای فروش دارد، قابل مذاکره.',
+  images: [
+    'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80'
+  ]
+};
+
+export const SAMPLE_REQUEST = {
+  id: 1,
+  propertyType: 'آپارتمان',
+  contractType: 'فروش',
+  city: 'تهران',
+  district: ['منطقه ۱', 'منطقه ۲'],
+  neighborhood: ['زعفرانیه', 'الهیه', 'سعادت‌آباد'],
+  areaFrom: 90,
+  areaTo: 130,
+  totalPriceFrom: 5000000000,
+  totalPriceTo: 7500000000,
+  roomCount: 2,
+  requesterName: 'علی محمدی',
+  requesterPhone: '09121234567'
+};
+
 export default function Home() {
   return (
     <>
+    <Sort />
       <CardFile
         data={propertyItem}
         badgeLabel="فایل ویژه"
