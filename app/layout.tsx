@@ -1,18 +1,13 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Vazirmatn } from "next/font/google"; // پیشنهاد: استفاده از فونت فارسی استاندارد
 import "./globals.css";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import { CssBaseline, ThemeProvider } from "@mui/material";
-import { rtl, theme } from "./theme";
+import { cacheRtlOptions, theme } from "./theme";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const vazirmatn = Vazirmatn({
+  subsets: ["arabic"],
+  variable: "--font-vazirmatn",
 });
 
 export const metadata: Metadata = {
@@ -20,15 +15,21 @@ export const metadata: Metadata = {
   description: "سایت خرید و فروش آنلاین ملک",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <AppRouterCacheProvider  options={rtl}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <body>{children}</body>
-        </ThemeProvider>
-      </AppRouterCacheProvider>
+    <html lang="fa" dir="rtl" className={vazirmatn.variable}>
+      <body>
+        <AppRouterCacheProvider options={cacheRtlOptions}>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            {children}
+          </ThemeProvider>
+        </AppRouterCacheProvider>
+      </body>
     </html>
   );
 }

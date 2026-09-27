@@ -1,7 +1,7 @@
 'use client';
 
 import { createTheme } from '@mui/material/styles';
-import rtlPlugin from '@mui/stylis-plugin-rtl';
+import rtlPlugin from 'stylis-plugin-rtl';
 import { prefixer } from 'stylis';
 
 declare module '@mui/material/styles' {
@@ -21,7 +21,8 @@ declare module '@mui/material/styles' {
   }
 }
 
-export const rtl = {
+// تنظیمات RTL Cache برای AppRouterCacheProvider
+export const cacheRtlOptions = {
   key: 'muirtl',
   stylisPlugins: [prefixer, rtlPlugin],
 };

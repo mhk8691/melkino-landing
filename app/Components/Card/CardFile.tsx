@@ -18,81 +18,96 @@ import BookmarkRoundedIcon from "@mui/icons-material/BookmarkRounded";
 import BookmarkBorderRoundedIcon from "@mui/icons-material/BookmarkBorderRounded";
 import PhotoCameraRoundedIcon from "@mui/icons-material/PhotoCameraRounded";
 import VerifiedRoundedIcon from "@mui/icons-material/VerifiedRounded";
+import PersonOutlineRoundedIcon from "@mui/icons-material/PersonOutlineRounded";
+import PhoneInTalkRoundedIcon from "@mui/icons-material/PhoneInTalkRounded";
+import { PropertyType } from "@/app/Core/types";
+import { getPropertyTypeIcon } from "./PropertyTypeIcon";
 
-export interface PropertyMetric {
-  /** برچسب متریک، مثل «متراژ»، «اتاق» یا «طبقه» */
-  label: string;
-  /** مقدار متریک، مثل «۱۶۵ متر» */
-  value: string;
-}
-
-export interface PropertyFileCardProps {
-  /** آدرس تصویر اصلی ملک */
-  imageUrl: string;
-  /** متن جایگزین تصویر */
-  imageAlt?: string;
-  /** برچسب بالای کارت، مثل «فایل VIP ویژه» — اگر خالی باشد نمایش داده نمی‌شود */
+export interface CardFileProps {
+  /** داده کامل از نوع PropertyType شامل تمام فیلدهای مشترک و اختصاصی */
+  data: PropertyType;
+  /** برچسب ویژه اختیاری، مثل «فایل ویژه» یا «VIP» */
   badgeLabel?: string;
-  /** برچسب نوع معامله، مثل «فروش مسکونی» — اختیاری */
-  dealTypeLabel?: string;
-  /** تعداد تصاویر ملک */
-  photoCount?: number;
-  /** موقعیت مکانی، مثل «تهران، منطقه زعفرانیه» */
-  location: string;
-  /** عنوان فایل ملکی */
-  title: string;
-  /** ردیف متریک‌ها (حداکثر ۳ مورد پیشنهاد می‌شود) */
-  metrics: PropertyMetric[];
-  /** برچسب بالای قیمت، مثل «قیمت کل کارشناسی‌شده:» */
-  priceLabel?: string;
-  /** مقدار عددی قیمت به صورت رشته فرمت‌شده */
-  priceValue: string;
-  /** واحد قیمت، مثل «تومان» */
-  priceUnit?: string;
-  /** نام مشاور یا مالک */
-  agentName: string;
-  /** آیا مشاور/مالک تایید شده است (آیکن verified نشان داده می‌شود) */
-  isVerified?: boolean;
   /** وضعیت اولیه نشان‌شده بودن (بوکمارک) */
   initialBookmarked?: boolean;
+  /** آیا مسئول/مشاور تایید شده است */
+  isVerified?: boolean;
   /** کال‌بک کلیک روی دکمه نشان کردن */
   onBookmarkToggle?: (bookmarked: boolean) => void;
-  /** کال‌بک کلیک روی دکمه چت */
-  onChatClick?: () => void;
   /** کال‌بک کلیک روی دکمه مشاهده جزئیات */
-  onDetailsClick?: () => void;
+  onDetailsClick?: (data: PropertyType) => void;
 }
 
-/**
- * کارت نمایش یک فایل ملکی (آپارتمان، ویلا، تجاری و ...)
- * مطابق تم بصری پروژه (رنگ‌ها، تایپوگرافی و شعاع گوشه‌ها) ساخته شده است.
- */
+/** تابع کمکی فرمت اعداد */
+const formatNumber = (num?: number) => {
+  if (num === undefined || num === null || isNaN(num)) return "0";
+  return num.toLocaleString("fa-IR");
+};
+
+/** تابع کمکی ترکیب فیلدهای مشترک موقعیت مکانی */
+const getFormattedLocation = (data: PropertyType) => {
+  const parts: string[] = [];
+  if (data.city) parts.push(data.city);
+
+  if (data.district) {
+    parts.push(
+      Array.isArray(data.district) ? data.district.join("، ") : data.district,
+    );
+  }
+
+  if (data.neighborhood) {
+    parts.push(
+      Array.isArray(data.neighborhood)
+        ? data.neighborhood.join("، ")
+        : data.neighborhood,
+    );
+  }
+
+  return parts.length > 0 ? parts.join("، ") : "موقعیت مشخص نشده";
+};
+
 export default function CardFile({
-  imageUrl,
-  imageAlt = "",
+  data,
   badgeLabel,
-  dealTypeLabel,
-  photoCount,
-  location,
-  title,
-  metrics,
-  priceLabel = "قیمت کل:",
-  priceValue,
-  priceUnit = "تومان",
-  agentName,
-  isVerified = false,
   initialBookmarked = false,
+  isVerified = false,
   onBookmarkToggle,
   onDetailsClick,
-}: PropertyFileCardProps) {
+}: CardFileProps) {
   const [bookmarked, setBookmarked] = React.useState(initialBookmarked);
 
-  const handleBookmarkClick = () => {
+  const handleBookmarkClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     const next = !bookmarked;
     setBookmarked(next);
     onBookmarkToggle?.(next);
   };
 
+  const getDisplayArea = (): string => {
+    if (data.area) return `${formatNumber(data.area)} متر`;
+    if (data.areaFrom || data.areaTo) {
+      return `${formatNumber(data.areaFrom || 0)} تا ${formatNumber(data.areaTo || 0)} متر`;
+    }
+    return "نامشخص";
+  };
+
+  // محاسبه قیمت بر اساس فیلدهای مشترک
+  const isRentType =
+    data.contractType === "رهن و اجاره" || data.contractType === "اجاره";
+  const displayPriceValue = isRentType
+    ? formatNumber(data.mortgagePrice || data.rent || data.mortgagePriceFrom)
+    : formatNumber(data.totalPrice || data.totalPriceFrom);
+
+  const personName =
+    data.assignedTo || data.advisorName || data.ownerName || "کارشناس مربوطه";
+  const getCoverImage = () => {
+    if (data.images && data.images.length > 0) {
+      const firstImg = data.images[0];
+      if (typeof firstImg === "string") return firstImg;
+      if (firstImg instanceof File) return URL.createObjectURL(firstImg);
+    }
+    return null;
+  };
   return (
     <Card
       elevation={0}
@@ -114,61 +129,101 @@ export default function CardFile({
       }}
     >
       {/* تصویر و بج‌ها */}
+      {/* بخش تصویر / آیکون fallback */}
       <Box
         sx={{
           position: "relative",
           height: 200,
           width: "100%",
+          bgcolor: "action.hover",
           overflow: "hidden",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background:
+            data.images && data.images.length > 0
+              ? "none"
+              : (theme) =>
+                  `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.08)} 0%, ${alpha(theme.palette.primary.main, 0.2)} 100%)`,
         }}
       >
-        <Box
-          component="img"
-          src={imageUrl}
-          alt={imageAlt}
-          sx={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            transition: "transform 0.5s ease",
-            ".MuiCard-root:hover &": { transform: "scale(1.05)" },
-          }}
-        />
+        {data.images && data.images.length > 0 ? (
+          <Box
+            component="img"
+            src={getCoverImage()}
+            alt={data.propertyType || "ملک"}
+            sx={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              transition: "transform 0.5s ease",
+              ".MuiCard-root:hover &": { transform: "scale(1.05)" },
+            }}
+          />
+        ) : (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 1,
+              color: "primary.main",
+              p: 2,
+              textAlign: "center",
+            }}
+          >
+            {getPropertyTypeIcon(data.propertyType, {
+              sx: { fontSize: 64, opacity: 0.85 },
+            })}
+            <Typography
+              variant="caption"
+              sx={{ fontWeight: 700, color: "text.secondary", fontSize: 13 }}
+            >
+              {data.propertyType || "درخواست ملک"}
+            </Typography>
+          </Box>
+        )}
 
-        {/* بج‌های بالا-راست (در RTL یعنی سمت شروع) */}
+        {/* بج‌های راست (RTL) */}
         <Stack
           direction="row"
-          sx={{ position: "absolute", top: 12, left: 10, zIndex: 1, gap: 1 }}
+          spacing={1}
+          sx={{
+            position: "absolute",
+            top: 12,
+            left: 12,
+            zIndex: 1,
+          }}
         >
           {badgeLabel && (
             <Chip
               size="small"
               label={badgeLabel}
               sx={{
-                bgcolor: "secondary.main",
-                color: "#2A1800",
+                bgcolor: "warning.main",
+                color: "warning.contrastText",
                 fontWeight: 700,
-                fontSize: 12,
-                boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-                "& .MuiChip-icon": { color: "#2A1800" },
+                fontSize: 11,
               }}
             />
           )}
-          {dealTypeLabel && (
+          {data.contractType && (
             <Chip
               size="small"
-              label={dealTypeLabel}
+              label={data.contractType}
               sx={{
                 bgcolor: alpha("#FFFFFF", 0.9),
+                backdropFilter: "blur(4px)",
                 color: "primary.dark",
-                fontWeight: 600,
-                fontSize: 12,
+                fontWeight: 700,
+                fontSize: 11,
               }}
             />
           )}
         </Stack>
 
-        {/* دکمه نشان کردن (بوکمارک) بالا-چپ */}
+        {/* دکمه بوکمارک */}
         <IconButton
           onClick={handleBookmarkClick}
           aria-label="نشان کردن ملک"
@@ -179,7 +234,8 @@ export default function CardFile({
             right: 10,
             zIndex: 1,
             bgcolor: alpha("#FFFFFF", 0.85),
-            color: bookmarked ? "secondary.dark" : "text.secondary",
+            backdropFilter: "blur(4px)",
+            color: bookmarked ? "primary.main" : "text.secondary",
             "&:hover": { bgcolor: "#FFFFFF" },
           }}
         >
@@ -190,32 +246,36 @@ export default function CardFile({
           )}
         </IconButton>
 
-        {/* شمارنده تعداد تصاویر پایین-راست */}
-        {typeof photoCount === "number" && (
+        {/* شمارنده عکس‌ها (فقط در صورت وجود عکس) */}
+        {data.images && data.images.length > 0 && (
           <Stack
             direction="row"
             sx={{
               alignItems: "center",
               position: "absolute",
-              bottom: 8,
-              left: 8,
+              bottom: 10,
+              right: 10,
               px: 1,
-              py: 0.25,
-              borderRadius: "4px",
-              bgcolor: alpha("#000000", 0.6),
+              py: 0.3,
+              borderRadius: "6px",
+              bgcolor: alpha("#000000", 0.65),
               color: "#FFFFFF",
               gap: 0.5,
+              backdropFilter: "blur(2px)",
             }}
           >
-            <Typography variant="caption" sx={{ fontSize: 12 }}>
-              {`تصویر ${photoCount} `}
+            <PhotoCameraRoundedIcon sx={{ fontSize: 13 }} />
+            <Typography
+              variant="caption"
+              sx={{ fontSize: 11, fontWeight: 600 }}
+            >
+              {formatNumber(data.images.length)}
             </Typography>
-            <PhotoCameraRoundedIcon sx={{ fontSize: 14 }} />
           </Stack>
         )}
       </Box>
 
-      {/* محتوای کارت */}
+      {/* محتوای اصلی کارت */}
       <CardContent
         sx={{
           p: 2,
@@ -228,7 +288,7 @@ export default function CardFile({
         <Box
           sx={{
             flexDirection: "column",
-            alignItems: "flex-end",
+            alignItems: "flex-start",
             display: "flex",
           }}
         >
@@ -241,7 +301,7 @@ export default function CardFile({
               sx={{ fontSize: 18, color: "primary.main" }}
             />
             <Typography variant="caption" sx={{ fontSize: 12 }}>
-              {location}
+              {getFormattedLocation(data)}
             </Typography>
           </Stack>
           <Typography
@@ -252,45 +312,74 @@ export default function CardFile({
               overflow: "hidden",
               textOverflow: "ellipsis",
               whiteSpace: "nowrap",
+              width: "100%",
             }}
           >
-            {title}
+            {`${data.propertyType} ${data.contractType ? `- ${data.contractType}` : ""}`}
           </Typography>
         </Box>
 
-        {/* ردیف متریک‌ها */}
-        {metrics.length > 0 && (
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: `repeat(${metrics.length}, 1fr)`,
-              gap: 0.5,
-              bgcolor: "background.paper",
-              borderRadius: "8px",
-              p: 1,
-              textAlign: "center",
-            }}
-          >
-            {metrics.map((m, i) => (
-              <Box key={i} sx={{ display: "flex", flexDirection: "column" }}>
-                <Typography
-                  variant="caption"
-                  sx={{ color: "text.muted", fontSize: 11 }}
-                >
-                  {m.label}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{ fontWeight: 700, color: "text.primary" }}
-                >
-                  {m.value}
-                </Typography>
-              </Box>
-            ))}
+        {/* ردیف متریک‌های مشترک (متراژ، تعداد اتاق، طبقه) */}
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: 0.5,
+            bgcolor: "background.paper",
+            borderRadius: "8px",
+            p: 1,
+            textAlign: "center",
+          }}
+        >
+          <Box sx={{ display: "flex", flexDirection: "column" }}>
+            <Typography
+              variant="caption"
+              sx={{ color: "text.muted", fontSize: 11 }}
+            >
+              متراژ
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ fontWeight: 700, color: "text.primary" }}
+            >
+              {getDisplayArea()}
+            </Typography>
           </Box>
-        )}
 
-        {/* قیمت */}
+          <Box sx={{ display: "flex", flexDirection: "column" }}>
+            <Typography
+              variant="caption"
+              sx={{ color: "text.muted", fontSize: 11 }}
+            >
+              اتاق
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ fontWeight: 700, color: "text.primary" }}
+            >
+              {data.roomCount
+                ? `${formatNumber(data.roomCount)} خواب`
+                : "نامشخص"}
+            </Typography>
+          </Box>
+
+          <Box sx={{ display: "flex", flexDirection: "column" }}>
+            <Typography
+              variant="caption"
+              sx={{ color: "text.muted", fontSize: 11 }}
+            >
+              طبقه
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ fontWeight: 700, color: "text.primary" }}
+            >
+              {data.totalFloor ? `${formatNumber(data.totalFloor)}` : "نامشخص"}
+            </Typography>
+          </Box>
+        </Box>
+
+        {/* بخش قیمت */}
         <Box
           sx={{
             pt: 1,
@@ -298,14 +387,14 @@ export default function CardFile({
             borderColor: "background.border",
             display: "flex",
             flexDirection: "column",
-            alignItems: "flex-end",
+            alignItems: "flex-start",
           }}
         >
           <Typography
             variant="caption"
             sx={{ color: "text.muted", fontSize: 12 }}
           >
-            {priceLabel}
+            {isRentType ? "قیمت رهن / ودیعه:" : "قیمت کل:"}
           </Typography>
           <Stack
             sx={{
@@ -316,23 +405,97 @@ export default function CardFile({
               justifyContent: "space-between",
             }}
           >
+                  <Typography
+              variant="h6"
+              sx={{ fontWeight: 800, color: "primary.main" }}
+            >
+              {displayPriceValue}
+            </Typography>
             <Typography
               variant="caption"
               sx={{ color: "text.secondary", fontWeight: 600 }}
             >
-              {priceUnit}
+              تومان
             </Typography>
-            <Typography
-              variant="h6"
-              sx={{ fontWeight: 800, color: "primary.main" }}
-            >
-              {priceValue}
-            </Typography>
+      
           </Stack>
         </Box>
 
+        {/* فیلدهای اختیاری درخواست‌کننده (در صورت وجود) */}
+        {(data.requesterName || data.requesterPhone) && (
+          <Box
+            sx={{
+              p: 1,
+              borderRadius: "8px",
+              bgcolor: alpha("#1976d2", 0.05),
+              display: "flex",
+              flexDirection: "column",
+              gap: 0.5,
+            }}
+          >
+            {data.requesterName && (
+              <Stack
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 0.5,
+                }}
+              >
+                <PersonOutlineRoundedIcon
+                  sx={{ fontSize: 15, color: "primary.main" }}
+                />
+                <Typography
+                  variant="caption"
+                  sx={{ fontSize: 11, color: "text.secondary" }}
+                >
+                  متقاضی:
+                </Typography>
+                <Typography
+                  variant="caption"
+                  sx={{ fontSize: 11, fontWeight: 700, color: "text.primary" }}
+                >
+                  {data.requesterName}
+                </Typography>
+              </Stack>
+            )}
+            {data.requesterPhone && (
+              <Stack
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 0.5,
+                }}
+              >
+                <PhoneInTalkRoundedIcon
+                  sx={{ fontSize: 15, color: "primary.main" }}
+                />
+                <Typography
+                  variant="caption"
+                  sx={{ fontSize: 11, color: "text.secondary" }}
+                >
+                  تماس:
+                </Typography>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: "text.primary",
+                    direction: "ltr",
+                  }}
+                >
+                  {data.requesterPhone}
+                </Typography>
+              </Stack>
+            )}
+          </Box>
+        )}
+
         <Divider sx={{ borderColor: "background.border" }} />
 
+        {/* فوتر کارت */}
         <Stack
           sx={{
             display: "flex",
@@ -342,10 +505,9 @@ export default function CardFile({
           }}
         >
           <Stack direction="row" spacing={0.5}>
-    
             <Button
               size="small"
-              onClick={onDetailsClick}
+              onClick={() => onDetailsClick?.(data)}
               variant="contained"
               sx={{
                 borderRadius: "8px",
@@ -359,14 +521,15 @@ export default function CardFile({
               مشاهده جزئیات
             </Button>
           </Stack>
-          <Stack  sx={{ display:'flex',flexDirection:'row',alignItems: "center",gap:.5 }} >
-            <Typography
-              variant="caption"
-              sx={{ color: "text.secondary", fontSize: 12 }}
-            >
-              {agentName}
-            </Typography>
-            {isVerified ? (
+          <Stack
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 0.5,
+            }}
+          >
+               {isVerified ? (
               <VerifiedRoundedIcon sx={{ fontSize: 16, color: "#10B981" }} />
             ) : (
               <Box
@@ -378,6 +541,13 @@ export default function CardFile({
                 }}
               />
             )}
+            <Typography
+              variant="caption"
+              sx={{ color: "text.secondary", fontSize: 12 }}
+            >
+              {personName}
+            </Typography>
+         
           </Stack>
         </Stack>
       </CardContent>
