@@ -154,7 +154,6 @@ export const SAMPLE_REQUEST = {
 export default function Home() {
   return (
     <>
-    <Navbar/>
     </>
   );
 }
