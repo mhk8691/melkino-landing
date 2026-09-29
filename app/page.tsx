@@ -1,6 +1,7 @@
 "use client";
 
 import CardFile from "./Components/Card/CardFile";
+import LocationPickerModal from "./Components/ChooseCity/LocationPickerModal";
 import MobileBottomNav from "./Components/Navbar/MobileBottomNav";
 import Navbar from "./Components/Navbar/Navbar";
 import Sort from "./Components/Sort/Sort";
