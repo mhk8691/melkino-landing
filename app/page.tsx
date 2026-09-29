@@ -1,6 +1,8 @@
 "use client";
 
 import CardFile from "./Components/Card/CardFile";
+import MobileBottomNav from "./Components/Navbar/MobileBottomNav";
+import Navbar from "./Components/Navbar/Navbar";
 import Sort from "./Components/Sort/Sort";
 import { PropertyType } from "./Core/types";
 
@@ -152,17 +154,7 @@ export const SAMPLE_REQUEST = {
 export default function Home() {
   return (
     <>
-    <Sort />
-      <CardFile
-        data={propertyItem}
-        badgeLabel="فایل ویژه"
-        onDetailsClick={(item) => console.log(item)}
-      />
-
-      <CardFile
-        data={requestItem}
-        onDetailsClick={(item) => console.log(item)}
-      />
+    <Navbar/>
     </>
   );
 }
