@@ -5,6 +5,7 @@ import ActionCards from "./Components/ActionCards/ActionCards";
 import { PropertyType } from "./Core/types";
 import HeroSlider from "./Components/HeroSlider/HeroSlider";
 import StatsFilterBar from "./Components/Filter/StatsFilterBar";
+import AdvancedFilterPanel from "./Components/Filter/AdvancedFilterPanel";
 
 export const propertyItem: PropertyType = {
   id: 101,
@@ -158,6 +159,7 @@ export default function Home() {
         <HeroSlider/>
         <ActionCards />
         <StatsFilterBar/>
+        <AdvancedFilterPanel/>
       </Container>
     </>
   );
