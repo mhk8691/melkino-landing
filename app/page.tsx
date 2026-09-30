@@ -1,11 +1,13 @@
 "use client";
 
-import { Container } from "@mui/material";
+import { Container, Grid } from "@mui/material";
 import ActionCards from "./Components/ActionCards/ActionCards";
 import { PropertyType } from "./Core/types";
 import HeroSlider from "./Components/HeroSlider/HeroSlider";
 import StatsFilterBar from "./Components/Filter/StatsFilterBar";
 import AdvancedFilterPanel from "./Components/Filter/AdvancedFilterPanel";
+import CardFile from "./Components/Card/CardFile";
+import PropertiesPage from "./Components/Card/PropertiesPage";
 
 export const propertyItem: PropertyType = {
   id: 101,
@@ -155,11 +157,23 @@ export const SAMPLE_REQUEST = {
 export default function Home() {
   return (
     <>
-      <Container maxWidth={'xl'}  sx={{ px: 4,minWidth:'100% !important' ,display:'flex',flexDirection:'column',gap:3}}>
-        <HeroSlider/>
+      <Container
+        maxWidth={"xl"}
+        sx={{
+          px: {
+            xs:2,
+            sm:4
+          },
+          minWidth: "100% !important",
+          display: "flex",
+          flexDirection: "column",
+          gap: 3,
+        }}
+      >
+        <HeroSlider />
         <ActionCards />
-        <StatsFilterBar/>
-        <AdvancedFilterPanel/>
+        <StatsFilterBar />
+        <PropertiesPage/>
       </Container>
     </>
   );

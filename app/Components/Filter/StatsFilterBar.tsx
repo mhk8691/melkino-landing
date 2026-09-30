@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Box, Button } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import ApartmentIcon from "@mui/icons-material/Apartment";
@@ -58,30 +58,41 @@ export default function StatsFilterBar({
   onTabChange,
 }: Props) {
   const [activeTab, setActiveTab] = useState<TabType>(defaultTab);
+  const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   const handleTabChange = (tab: TabType) => {
     setActiveTab(tab);
     onTabChange?.(tab);
   };
 
+  // در موبایل که تب‌ها اسکرول می‌خورند، تب فعال را وسط دید بیاور
+  useEffect(() => {
+    tabRefs.current[activeTab]?.scrollIntoView({
+      behavior: "smooth",
+      inline: "center",
+      block: "nearest",
+    });
+  }, [activeTab]);
+
   return (
     <Box
       sx={{
         width: "100%",
+        boxSizing: "border-box",
         backgroundColor: "#fff",
         borderRadius: { xs: "14px", md: "16px" },
         border: "1px solid #eef0f4",
         boxShadow: "0 4px 20px rgba(20, 30, 60, 0.06)",
-        p: { xs: 1, md: 1.25 },
+        p: { xs: 0.75, sm: 1, md: 1.25 },
         display: "flex",
         flexDirection: { xs: "column", lg: "row" },
         alignItems: { xs: "stretch", lg: "center" },
-        justifyContent: "center",
+        justifyContent: "flex-start",
         gap: { xs: 1.5, lg: 2 },
         minWidth: 0,
       }}
     >
-      {/* ==================== سمت راست: تب‌ها ==================== */}
+      {/* ==================== تب‌ها ==================== */}
       <Box
         role="tablist"
         aria-label="فیلتر فایل‌ها"
@@ -92,8 +103,14 @@ export default function StatsFilterBar({
           display: "flex",
           gap: 0.5,
           minWidth: 0,
+          // موبایل و تبلت: تمام‌عرض | دسکتاپ بزرگ: به اندازه‌ی محتوا
+          width: { xs: "100%", lg: "auto" },
           maxWidth: "100%",
+          boxSizing: "border-box",
           overflowX: "auto",
+          overscrollBehaviorX: "contain",
+          scrollSnapType: "x proximity",
+          WebkitOverflowScrolling: "touch",
           scrollbarWidth: "none",
           "&::-webkit-scrollbar": { display: "none" },
         }}
@@ -105,15 +122,24 @@ export default function StatsFilterBar({
           return (
             <Button
               key={tab.key}
+              ref={(el) => {
+                tabRefs.current[tab.key] = el;
+              }}
               role="tab"
               aria-selected={isActive}
+              tabIndex={isActive ? 0 : -1}
               disableRipple
               onClick={() => handleTabChange(tab.key)}
               sx={{
-                flexShrink: 0,
+                // xs: هر تب به اندازه‌ی محتوا (با اسکرول افقی)
+                // md به بالا: اگر جا باشد تب‌ها فضا را مساوی تقسیم می‌کنند
+                flex: { xs: "0 0 auto", md: "1 1 auto" },
+                scrollSnapAlign: "center",
                 display: "flex",
                 alignItems: "center",
-                gap: 1,
+                justifyContent: "center",
+                gap: { xs: 0.75, md: 1 },
+                minHeight: { xs: 44, md: "auto" },
                 px: { xs: 1.5, md: 2.25 },
                 py: { xs: 0.9, md: 1.1 },
                 borderRadius: "10px",
@@ -125,6 +151,7 @@ export default function StatsFilterBar({
                 boxShadow: isActive
                   ? "0 2px 8px rgba(20, 30, 60, 0.1)"
                   : "none",
+                WebkitTapHighlightColor: "transparent",
                 transition:
                   "background-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease",
                 "&:hover": {
@@ -138,6 +165,7 @@ export default function StatsFilterBar({
             >
               <Icon
                 sx={{
+                  flexShrink: 0,
                   fontSize: { xs: 18, md: 20 },
                   color: isActive ? tab.iconColor : "#8b93a1",
                 }}
