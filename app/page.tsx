@@ -168,6 +168,7 @@ export default function Home() {
           display: "flex",
           flexDirection: "column",
           gap: 3,
+          mb:5
         }}
       >
         <HeroSlider />
