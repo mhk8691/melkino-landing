@@ -172,7 +172,7 @@ export default function Home() {
       >
         <HeroSlider />
         <ActionCards />
-        <StatsFilterBar />
+        
         <PropertiesPage/>
       </Container>
     </>

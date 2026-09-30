@@ -5,8 +5,12 @@ import {
   Typography,
   ToggleButton,
   ToggleButtonGroup,
+  ButtonBase,
 } from "@mui/material";
-import FilterListIcon from '@mui/icons-material/FilterList';
+import SortIcon from "@mui/icons-material/Sort";
+import GridViewOutlinedIcon from "@mui/icons-material/GridViewOutlined";
+import TableRowsOutlinedIcon from "@mui/icons-material/TableRowsOutlined";
+
 export type SortValue = "newest" | "cheapest" | "expensive" | "popular";
 export type ViewValue = "list" | "grid";
 
@@ -34,131 +38,184 @@ export interface FileToolbarProps {
   onViewChange?: (view: ViewValue) => void;
 }
 
-// تابع کمکی برای تبدیل مطمئن اعداد به فارسی
-const toPersianDigits = (n: number): string => {
-  return n.toLocaleString("fa-IR");
-};
+const toPersianDigits = (n: number): string => n.toLocaleString("fa-IR");
 
 export default function FileToolbar({
   total = 1240,
   from = 1,
   to = 6,
   defaultSort = "newest",
+  defaultView = "grid",
   sortValue,
+  viewValue,
   onSortChange,
+  onViewChange,
 }: FileToolbarProps): React.JSX.Element {
-  // پشتیبانی همزمان از حالت Controlled و Uncontrolled
+  // Controlled + Uncontrolled support
   const [sort, setSort] = useState<SortValue>(sortValue ?? defaultSort);
+  const [view, setView] = useState<ViewValue>(viewValue ?? defaultView);
 
   useEffect(() => {
     if (sortValue !== undefined) setSort(sortValue);
   }, [sortValue]);
 
+  useEffect(() => {
+    if (viewValue !== undefined) setView(viewValue);
+  }, [viewValue]);
 
-  const handleSortChange = (
+  const handleSortChange = (newSort: SortValue): void => {
+    if (sortValue === undefined) setSort(newSort);
+    onSortChange?.(newSort);
+  };
+
+  const handleViewChange = (
     _event: React.MouseEvent<HTMLElement>,
-    newSort: SortValue | null,
+    newView: ViewValue | null,
   ): void => {
-    if (newSort !== null) {
-      if (sortValue === undefined) setSort(newSort);
-      onSortChange?.(newSort);
+    if (newView !== null) {
+      if (viewValue === undefined) setView(newView);
+      onViewChange?.(newView);
     }
   };
 
-
-
   return (
     <Box
+      dir="rtl"
       sx={{
         width: "100%",
-        direction: "rtl",
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        flexWrap: "wrap",
+        gap: 2,
+        px: 2,
+        py: 1.25,
+        borderRadius: 3,
+        border: "1px solid #eef0f4",
+        boxShadow: "0 4px 20px rgba(20, 30, 60, 0.06)",
+        bgcolor: "background.paper",
       }}
     >
+      {/* Right side (RTL start): sort */}
       <Stack
         sx={{
           display: "flex",
           flexDirection: "row",
           alignItems: "center",
-          justifyContent: "space-between",
           flexWrap: "wrap",
-          gap: 2,
-          px: 2,
-          py: 1,
-          border: "1px solid",
-          borderColor: "divider",
-          borderRadius: 2,
-          bgcolor: "background.paper",
+          gap: 0.5,
         }}
       >
-        {/* Result count + view toggle */}
         <Stack
           sx={{
             display: "flex",
+            alignItems: "center",
             flexDirection: "row",
-            alignItems: "center",
-            gap: 1.5,
+            gap: 0.75,
+            ml: 1,
           }}
         >
+          <SortIcon color="primary" fontSize="small" />
           <Typography
             variant="body2"
             sx={{ color: "text.secondary", whiteSpace: "nowrap" }}
           >
-            نمایش {toPersianDigits(from)} تا {toPersianDigits(to)} از{" "}
-            {toPersianDigits(total)} فایل
+            مرتب‌سازی بر اساس:
           </Typography>
-
-         
-
-   
         </Stack>
-        {/* Sort controls */}
-        <Stack
-          sx={{
-            display: "flex",
-            flexDirection: "row-reverse",
-            alignItems: "center",
-            gap: 1.5,
-          }}
-        >
-          <FilterListIcon color="primary" />
-          <Typography
-            variant="body2"
-            sx={{ color: "text.secondary", whiteSpace: "nowrap" }}
-          >
-            :مرتب‌سازی بر اساس
-          </Typography>
 
-          <ToggleButtonGroup
-            value={sort}
-            exclusive
-            onChange={handleSortChange}
-            size="small"
-            sx={{
-              gap: 0.5,
-              "& .MuiToggleButtonGroup-grouped": {
-                border: "none",
-                borderRadius: "8px !important",
-                px: 1.5,
-                color: "text.secondary",
+        {SORT_OPTIONS.map((opt) => {
+          const selected = sort === opt.value;
+          return (
+            <ButtonBase
+              key={opt.value}
+              onClick={() => handleSortChange(opt.value)}
+              aria-pressed={selected}
+              sx={{
+                px: 1.75,
+                py: 0.75,
+                borderRadius: 2,
+                fontFamily: "inherit",
                 fontSize: "0.8125rem",
-                textTransform: "none",
-                "&.Mui-selected": {
-                  bgcolor: "primary.main",
-                  color: "primary.contrastText",
-                  "&:hover": {
-                    bgcolor: "primary.dark",
-                  },
+                fontWeight: selected ? 700 : 400,
+                whiteSpace: "nowrap",
+                color: selected ? "primary.main" : "text.secondary",
+                bgcolor: selected ? "action.selected" : "transparent",
+                transition: "background-color .15s, color .15s",
+                "&:hover": {
+                  bgcolor: selected ? "action.selected" : "action.hover",
                 },
+              }}
+            >
+              {opt.label}
+            </ButtonBase>
+          );
+        })}
+      </Stack>
+
+      {/* Left side (RTL end): result count + view toggle */}
+      <Stack
+        sx={{
+          gap: 2,
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
+        <Typography
+          variant="body2"
+          sx={{ color: "text.secondary", whiteSpace: "nowrap" }}
+        >
+          نمایش{" "}
+          <Box component="b" sx={{ color: "text.primary", fontWeight: 700 }}>
+            {toPersianDigits(from)}
+          </Box>{" "}
+          تا{" "}
+          <Box component="b" sx={{ color: "text.primary", fontWeight: 700 }}>
+            {toPersianDigits(to)}
+          </Box>{" "}
+          از{" "}
+          <Box component="b" sx={{ color: "text.primary", fontWeight: 700 }}>
+            {toPersianDigits(total)}
+          </Box>{" "}
+          فایل
+        </Typography>
+
+        <ToggleButtonGroup
+          value={view}
+          exclusive
+          onChange={handleViewChange}
+          size="small"
+          aria-label="حالت نمایش"
+          sx={{
+            p: 0.5,
+            gap: 0.5,
+            borderRadius: 2,
+            bgcolor: "action.hover",
+            "& .MuiToggleButtonGroup-grouped": {
+              border: "1px solid transparent",
+              borderRadius: "8px !important",
+              width: 36,
+              height: 36,
+              color: "text.disabled",
+              "&:not(:first-of-type)": { marginLeft: 0 },
+              "&.Mui-selected": {
+                bgcolor: "background.paper",
+                color: "primary.main",
+                borderColor: "primary.light",
+                "&:hover": { bgcolor: "background.paper" },
               },
-            }}
-          >
-            {SORT_OPTIONS.map((opt) => (
-              <ToggleButton key={opt.value} value={opt.value}>
-                {opt.label}
-              </ToggleButton>
-            ))}
-          </ToggleButtonGroup>
-        </Stack>
+            },
+          }}
+        >
+          <ToggleButton value="grid" aria-label="نمای شبکه‌ای">
+            <GridViewOutlinedIcon fontSize="small" />
+          </ToggleButton>
+          <ToggleButton value="list" aria-label="نمای لیستی">
+            <TableRowsOutlinedIcon fontSize="small" />
+          </ToggleButton>
+        </ToggleButtonGroup>
       </Stack>
     </Box>
   );

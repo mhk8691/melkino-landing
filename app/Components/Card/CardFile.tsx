@@ -119,8 +119,8 @@ export default function CardFile({
         display: "flex",
         flexDirection: "column",
         bgcolor: "background.default",
-        border: "1px solid",
-        borderColor: "background.border",
+        border: "1px solid #eef0f4",
+          boxShadow: "0 4px 20px rgba(20, 30, 60, 0.06)",
         transition: "box-shadow 0.3s ease, transform 0.3s ease",
         "&:hover": {
           boxShadow: "0 12px 28px rgba(20,68,147,0.14)",

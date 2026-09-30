@@ -1,78 +1,85 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { Box, Button } from "@mui/material";
-import StarIcon from "@mui/icons-material/Star";
-import ApartmentIcon from "@mui/icons-material/Apartment";
-import ManageSearchIcon from "@mui/icons-material/ManageSearch";
+import { Box, Button, useTheme } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 
-type TabType = "vip" | "all" | "requests";
+// ==================== انواع ====================
+export type FilterItem<T extends string = string> = {
+  /** شناسه‌ی یکتا (به onChange داده می‌شود) */
+  key: T;
+  /** متن نمایشی تب */
+  value: string;
+  /** شمارنده‌ی کنار متن (اختیاری) */
+  count?: string | number;
+  /** آیکون (اختیاری) */
+  icon?: React.ElementType;
+  /** رنگ اختصاصی آیکون و شمارنده در حالت فعال (اختیاری) */
+  color?: string;
+};
 
-const TABS: {
-  key: TabType;
-  label: string;
-  count: string;
-  icon: React.ElementType;
-  iconColor: string; // رنگ آیکون در حالت فعال
-  chipBg: string; // پس‌زمینه‌ی شمارنده در حالت فعال
-  chipColor: string;
-}[] = [
-  {
-    key: "vip",
-    label: "فایل‌های ویژه و VIP",
-    count: "۱,۲۴۰",
-    icon: StarIcon,
-    iconColor: "#d99a1e",
-    chipBg: "#fde5c3",
-    chipColor: "#c2680a",
-  },
-  {
-    key: "all",
-    label: "همه فایل‌های ملکی",
-    count: "۱۸,۵۰۰",
-    icon: ApartmentIcon,
-    iconColor: "#2563c9",
-    chipBg: "#dce8fb",
-    chipColor: "#1d4fa3",
-  },
-  {
-    key: "requests",
-    label: "تقاضا و درخواست‌های ملک",
-    count: "۳۴۰",
-    icon: ManageSearchIcon,
-    iconColor: "#7b3fb0",
-    chipBg: "#eddff7",
-    chipColor: "#6a2d9e",
-  },
-];
+type Props<T extends string = string> = {
+  items: FilterItem<T>[];
+  /** حالت کنترل‌شده */
+  value?: T;
+  /** حالت کنترل‌نشده */
+  defaultValue?: T;
+  onChange?: (key: T) => void;
+  ariaLabel?: string;
+};
 
+// ==================== ثابت‌ها ====================
 const ACTIVE_TEXT = "#1a4fa3";
 const IDLE_TEXT = "#5b6472";
 
-type Props = {
-  defaultTab?: TabType;
-  onTabChange?: (tab: TabType) => void;
-};
+// اگر آیتمی color نداشت، به ترتیب از این رنگ‌ها استفاده می‌شود
+const FALLBACK_COLORS = ["#d99a1e", "#2563c9", "#7b3fb0", "#0f9d74", "#d1495b"];
 
-export default function StatsFilterBar({
-  defaultTab = "vip",
-  onTabChange,
-}: Props) {
-  const [activeTab, setActiveTab] = useState<TabType>(defaultTab);
+// ==================== کامپوننت ====================
+export default function StatsFilterBar<T extends string = string>({
+  items,
+  value,
+  defaultValue,
+  onChange,
+  ariaLabel = "فیلتر فایل‌ها",
+}: Props<T>) {
+  const theme = useTheme();
+  const isRtl = theme.direction === "rtl";
+
+  const isControlled = value !== undefined;
+  const [inner, setInner] = useState<T | undefined>(defaultValue ?? items[0]?.key);
+  const active = isControlled ? value : inner;
+
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
-  const handleTabChange = (tab: TabType) => {
-    setActiveTab(tab);
-    onTabChange?.(tab);
+  const select = (key: T) => {
+    if (!isControlled) setInner(key);
+    onChange?.(key);
   };
 
   // در موبایل که تب‌ها اسکرول می‌خورند، تب فعال را وسط دید بیاور
   useEffect(() => {
-    tabRefs.current[activeTab]?.scrollIntoView({
+    if (active === undefined) return;
+    tabRefs.current[active]?.scrollIntoView({
       behavior: "smooth",
       inline: "center",
       block: "nearest",
     });
-  }, [activeTab]);
+  }, [active]);
+
+  // ناوبری با کیبورد (جهت فلش‌ها در RTL برعکس می‌شود)
+  const onKeyDown = (e: React.KeyboardEvent, index: number) => {
+    let next = index;
+    if (e.key === "ArrowRight") next = isRtl ? index - 1 : index + 1;
+    else if (e.key === "ArrowLeft") next = isRtl ? index + 1 : index - 1;
+    else if (e.key === "Home") next = 0;
+    else if (e.key === "End") next = items.length - 1;
+    else return;
+
+    e.preventDefault();
+    const target = items[(next + items.length) % items.length];
+    select(target.key);
+    tabRefs.current[target.key]?.focus();
+  };
 
   return (
     <Box
@@ -87,7 +94,6 @@ export default function StatsFilterBar({
         display: "flex",
         flexDirection: { xs: "column", lg: "row" },
         alignItems: { xs: "stretch", lg: "center" },
-        justifyContent: "flex-start",
         gap: { xs: 1.5, lg: 2 },
         minWidth: 0,
       }}
@@ -95,7 +101,7 @@ export default function StatsFilterBar({
       {/* ==================== تب‌ها ==================== */}
       <Box
         role="tablist"
-        aria-label="فیلتر فایل‌ها"
+        aria-label={ariaLabel}
         sx={{
           backgroundColor: "#f3f5f9",
           borderRadius: "14px",
@@ -103,7 +109,6 @@ export default function StatsFilterBar({
           display: "flex",
           gap: 0.5,
           minWidth: 0,
-          // موبایل و تبلت: تمام‌عرض | دسکتاپ بزرگ: به اندازه‌ی محتوا
           width: { xs: "100%", lg: "auto" },
           maxWidth: "100%",
           boxSizing: "border-box",
@@ -115,24 +120,25 @@ export default function StatsFilterBar({
           "&::-webkit-scrollbar": { display: "none" },
         }}
       >
-        {TABS.map((tab) => {
-          const isActive = activeTab === tab.key;
-          const Icon = tab.icon;
+        {items.map((item, index) => {
+          const isActive = active === item.key;
+          const Icon = item.icon;
+          const color = item.color ?? FALLBACK_COLORS[index % FALLBACK_COLORS.length];
 
           return (
             <Button
-              key={tab.key}
+              key={item.key}
               ref={(el) => {
-                tabRefs.current[tab.key] = el;
+                tabRefs.current[item.key] = el;
               }}
               role="tab"
               aria-selected={isActive}
               tabIndex={isActive ? 0 : -1}
               disableRipple
-              onClick={() => handleTabChange(tab.key)}
+              onClick={() => select(item.key)}
+              onKeyDown={(e) => onKeyDown(e, index)}
               sx={{
-                // xs: هر تب به اندازه‌ی محتوا (با اسکرول افقی)
-                // md به بالا: اگر جا باشد تب‌ها فضا را مساوی تقسیم می‌کنند
+                // xs: به اندازه‌ی محتوا (با اسکرول افقی) | md به بالا: تقسیم مساوی فضا
                 flex: { xs: "0 0 auto", md: "1 1 auto" },
                 scrollSnapAlign: "center",
                 display: "flex",
@@ -148,9 +154,7 @@ export default function StatsFilterBar({
                 fontWeight: isActive ? 800 : 600,
                 color: isActive ? ACTIVE_TEXT : IDLE_TEXT,
                 backgroundColor: isActive ? "#fff" : "transparent",
-                boxShadow: isActive
-                  ? "0 2px 8px rgba(20, 30, 60, 0.1)"
-                  : "none",
+                boxShadow: isActive ? "0 2px 8px rgba(20, 30, 60, 0.1)" : "none",
                 WebkitTapHighlightColor: "transparent",
                 transition:
                   "background-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease",
@@ -158,34 +162,40 @@ export default function StatsFilterBar({
                   backgroundColor: isActive ? "#fff" : "rgba(255,255,255,0.6)",
                 },
                 "&:focus-visible": {
-                  outline: "2px solid #2563c9",
+                  outline: `2px solid ${ACTIVE_TEXT}`,
                   outlineOffset: 2,
                 },
               }}
             >
-              <Icon
-                sx={{
-                  flexShrink: 0,
-                  fontSize: { xs: 18, md: 20 },
-                  color: isActive ? tab.iconColor : "#8b93a1",
-                }}
-              />
-              <Box component="span">{tab.label}</Box>
-              <Box
-                component="span"
-                sx={{
-                  px: 1,
-                  py: 0.2,
-                  borderRadius: "7px",
-                  fontSize: { xs: "0.68rem", md: "0.72rem" },
-                  fontWeight: 700,
-                  lineHeight: 1.6,
-                  backgroundColor: isActive ? tab.chipBg : "#e4e7ed",
-                  color: isActive ? tab.chipColor : IDLE_TEXT,
-                }}
-              >
-                {tab.count}
-              </Box>
+              {Icon && (
+                <Icon
+                  sx={{
+                    flexShrink: 0,
+                    fontSize: { xs: 18, md: 20 },
+                    color: isActive ? color : "#8b93a1",
+                  }}
+                />
+              )}
+
+              <Box component="span">{item.value}</Box>
+
+              {item.count !== undefined && (
+                <Box
+                  component="span"
+                  sx={{
+                    px: 1,
+                    py: 0.2,
+                    borderRadius: "7px",
+                    fontSize: { xs: "0.68rem", md: "0.72rem" },
+                    fontWeight: 700,
+                    lineHeight: 1.6,
+                    backgroundColor: isActive ? alpha(color, 0.15) : "#e4e7ed",
+                    color: isActive ? color : IDLE_TEXT,
+                  }}
+                >
+                  {item.count}
+                </Box>
+              )}
             </Button>
           );
         })}
