@@ -4,6 +4,7 @@ import { Container } from "@mui/material";
 import ActionCards from "./Components/ActionCards/ActionCards";
 import { PropertyType } from "./Core/types";
 import HeroSlider from "./Components/HeroSlider/HeroSlider";
+import StatsFilterBar from "./Components/Filter/StatsFilterBar";
 
 export const propertyItem: PropertyType = {
   id: 101,
@@ -153,9 +154,10 @@ export const SAMPLE_REQUEST = {
 export default function Home() {
   return (
     <>
-      <Container maxWidth={'xl'} sx={{ px: 4,minWidth:'100% !important' }}>
+      <Container maxWidth={'xl'}  sx={{ px: 4,minWidth:'100% !important' ,display:'flex',flexDirection:'column',gap:3}}>
         <HeroSlider/>
         <ActionCards />
+        <StatsFilterBar/>
       </Container>
     </>
   );
