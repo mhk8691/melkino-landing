@@ -67,11 +67,12 @@ function ActionCard({
         height: '100%',
         borderRadius: '14px',
         px: { xs: 2, md: 3 },
-        py: { xs: 2, md: 4},
+        py: { xs: 2.5, sm: 3, md: 4 },
         display: 'flex',
         flexDirection: { xs: 'column', sm: 'row' },
         alignItems: 'center',
         gap: { xs: 1.5, sm: 2 },
+        minWidth: 0,
         transition: 'transform 0.3s ease, box-shadow 0.3s ease',
         '&:hover': { transform: { xs: 'none', md: 'translateY(-2px)' } },
       }}
@@ -98,7 +99,9 @@ function ActionCard({
         sx={{
           flex: 1,
           minWidth: 0,
-          textAlign: { xs: 'center', sm: 'left' },
+          textAlign: { xs: 'center', sm: 'start' },
+          alignItems: { xs: 'center', sm: 'stretch' },
+          width: { xs: '100%', sm: 'auto' },
         }}
       >
         <Typography
@@ -133,7 +136,7 @@ function ActionCard({
           ...s.button,
           fontWeight: 700,
           borderRadius: '10px',
-          px: 5,
+          px: { xs: 3, sm: 4, md: 3, lg: 5 },
           py: 1.3,
           fontSize: '0.8rem',
           whiteSpace: 'nowrap',
@@ -149,8 +152,22 @@ function ActionCard({
 
 export default function ActionCards() {
   return (
-    <Box sx={{ width: '100%', py: { xs: 1, md: 2 } }}>
-      <Grid container spacing={{ xs: 2, md: 3 }} >
+    <Box
+      sx={{
+        position: 'relative',
+        zIndex: 20, // بالاتر از کنترل‌های اسلایدر (zIndex: 10)
+        width: '100%',
+        // موبایل و تبلت: زیر اسلایدر و بدون همپوشانی | دسکتاپ (md به بالا): روی اسلایدر
+        // اگر این عدد را عوض کردید، pb نوار پایین اسلایدر (md) را هم هماهنگ کنید
+        mt: { xs: 2, md: '-70px' },
+        pb: { xs: 1, md: 2 },
+        px:{
+          xs:0,
+          md:5
+        }
+      }}
+    >
+      <Grid container spacing={{ xs: 2, md: 3 }}>
         <Grid size={{ xs: 12, md: 6 }}>
           <ActionCard
             variant="primary"

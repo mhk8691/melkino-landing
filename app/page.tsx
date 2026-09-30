@@ -3,6 +3,7 @@
 import { Container } from "@mui/material";
 import ActionCards from "./Components/ActionCards/ActionCards";
 import { PropertyType } from "./Core/types";
+import HeroSlider from "./Components/HeroSlider/HeroSlider";
 
 export const propertyItem: PropertyType = {
   id: 101,
@@ -153,6 +154,7 @@ export default function Home() {
   return (
     <>
       <Container maxWidth={'xl'} sx={{ px: 4,minWidth:'100% !important' }}>
+        <HeroSlider/>
         <ActionCards />
       </Container>
     </>
