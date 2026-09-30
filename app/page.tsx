@@ -1,12 +1,9 @@
 "use client";
 
-import { Container, Grid } from "@mui/material";
+import { Container } from "@mui/material";
 import ActionCards from "./Components/ActionCards/ActionCards";
 import { PropertyType } from "./Core/types";
 import HeroSlider from "./Components/HeroSlider/HeroSlider";
-import StatsFilterBar from "./Components/Filter/StatsFilterBar";
-import AdvancedFilterPanel from "./Components/Filter/AdvancedFilterPanel";
-import CardFile from "./Components/Card/CardFile";
 import PropertiesPage from "./Components/Card/PropertiesPage";
 
 export const propertyItem: PropertyType = {

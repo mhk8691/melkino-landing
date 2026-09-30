@@ -3,38 +3,44 @@ import React, { useEffect, useRef, useState } from "react";
 import { Box, Button, useTheme } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 
-// ==================== انواع ====================
-export type FilterItem<T extends string = string> = {
-  /** شناسه‌ی یکتا (به onChange داده می‌شود) */
+type FilterItemBase<T extends string> = {
   key: T;
-  /** متن نمایشی تب */
   value: string;
-  /** شمارنده‌ی کنار متن (اختیاری) */
-  count?: string | number;
-  /** آیکون (اختیاری) */
-  icon?: React.ElementType;
-  /** رنگ اختصاصی آیکون و شمارنده در حالت فعال (اختیاری) */
   color?: string;
 };
 
+type FilterItemWithIcon<T extends string> = FilterItemBase<T> & {
+  icon: React.ElementType;
+  count?: never;
+};
+
+type FilterItemWithCount<T extends string> = FilterItemBase<T> & {
+  count: string | number;
+  icon?: never;
+};
+
+type FilterItemPlain<T extends string> = FilterItemBase<T> & {
+  icon?: never;
+  count?: never;
+};
+
+export type FilterItem<T extends string = string> =
+  | FilterItemWithIcon<T>
+  | FilterItemWithCount<T>
+  | FilterItemPlain<T>;
+
 type Props<T extends string = string> = {
   items: FilterItem<T>[];
-  /** حالت کنترل‌شده */
   value?: T;
-  /** حالت کنترل‌نشده */
   defaultValue?: T;
   onChange?: (key: T) => void;
   ariaLabel?: string;
 };
 
-// ==================== ثابت‌ها ====================
 const ACTIVE_TEXT = "#1a4fa3";
 const IDLE_TEXT = "#5b6472";
-
-// اگر آیتمی color نداشت، به ترتیب از این رنگ‌ها استفاده می‌شود
 const FALLBACK_COLORS = ["#d99a1e", "#2563c9", "#7b3fb0", "#0f9d74", "#d1495b"];
 
-// ==================== کامپوننت ====================
 export default function StatsFilterBar<T extends string = string>({
   items,
   value,
@@ -56,7 +62,6 @@ export default function StatsFilterBar<T extends string = string>({
     onChange?.(key);
   };
 
-  // در موبایل که تب‌ها اسکرول می‌خورند، تب فعال را وسط دید بیاور
   useEffect(() => {
     if (active === undefined) return;
     tabRefs.current[active]?.scrollIntoView({
@@ -66,7 +71,6 @@ export default function StatsFilterBar<T extends string = string>({
     });
   }, [active]);
 
-  // ناوبری با کیبورد (جهت فلش‌ها در RTL برعکس می‌شود)
   const onKeyDown = (e: React.KeyboardEvent, index: number) => {
     let next = index;
     if (e.key === "ArrowRight") next = isRtl ? index - 1 : index + 1;
@@ -87,7 +91,7 @@ export default function StatsFilterBar<T extends string = string>({
         width: "100%",
         boxSizing: "border-box",
         backgroundColor: "#fff",
-        borderRadius: { xs: "14px", md: "16px" },
+        borderRadius: 3,
         border: "1px solid #eef0f4",
         boxShadow: "0 4px 20px rgba(20, 30, 60, 0.06)",
         p: { xs: 0.75, sm: 1, md: 1.25 },
@@ -98,7 +102,6 @@ export default function StatsFilterBar<T extends string = string>({
         minWidth: 0,
       }}
     >
-      {/* ==================== تب‌ها ==================== */}
       <Box
         role="tablist"
         aria-label={ariaLabel}
@@ -123,6 +126,7 @@ export default function StatsFilterBar<T extends string = string>({
         {items.map((item, index) => {
           const isActive = active === item.key;
           const Icon = item.icon;
+          const hasCount = !Icon && item.count !== undefined;
           const color = item.color ?? FALLBACK_COLORS[index % FALLBACK_COLORS.length];
 
           return (
@@ -138,7 +142,6 @@ export default function StatsFilterBar<T extends string = string>({
               onClick={() => select(item.key)}
               onKeyDown={(e) => onKeyDown(e, index)}
               sx={{
-                // xs: به اندازه‌ی محتوا (با اسکرول افقی) | md به بالا: تقسیم مساوی فضا
                 flex: { xs: "0 0 auto", md: "1 1 auto" },
                 scrollSnapAlign: "center",
                 display: "flex",
@@ -179,7 +182,7 @@ export default function StatsFilterBar<T extends string = string>({
 
               <Box component="span">{item.value}</Box>
 
-              {item.count !== undefined && (
+              {hasCount && (
                 <Box
                   component="span"
                   sx={{
