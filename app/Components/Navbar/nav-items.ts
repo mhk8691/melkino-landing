@@ -21,7 +21,7 @@ export type NavItem = {
 };
 
 export const NAV_ITEMS: NavItem[] = [
-  { key: 'listings', label: 'فایل‌ها', href: '/listings', icon: FolderOpenOutlinedIcon, activeIcon: FolderIcon, group: 'main' },
+  { key: 'listings', label: 'فایل‌ها', href: '/files', icon: FolderOpenOutlinedIcon, activeIcon: FolderIcon, group: 'main' },
   { key: 'vip', label: 'فایل‌های ویژه', href: '/vip', icon: StarBorderRoundedIcon, activeIcon: StarRoundedIcon, group: 'main' },
   { key: 'requests', label: 'درخواست‌ها', href: '/requests', icon: RequestQuoteOutlinedIcon, activeIcon: RequestQuoteIcon, group: 'main' },
   { key: 'saved', label: 'ذخیره‌شده‌ها', href: '/saved', icon: BookmarkBorderRoundedIcon, activeIcon: BookmarkRoundedIcon, group: 'account' },

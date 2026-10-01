@@ -76,7 +76,7 @@ export default function CardFile({
   onDetailsClick,
 }: CardFileProps) {
   const [bookmarked, setBookmarked] = React.useState(initialBookmarked);
-  const router = useRouter()
+  const router = useRouter();
   const handleBookmarkClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     const next = !bookmarked;
@@ -121,7 +121,7 @@ export default function CardFile({
         flexDirection: "column",
         bgcolor: "background.default",
         border: "1px solid #eef0f4",
-          boxShadow: "0 4px 20px rgba(20, 30, 60, 0.06)",
+        boxShadow: "0 4px 20px rgba(20, 30, 60, 0.06)",
         transition: "box-shadow 0.3s ease, transform 0.3s ease",
         "&:hover": {
           boxShadow: "0 12px 28px rgba(20,68,147,0.14)",
@@ -151,7 +151,7 @@ export default function CardFile({
         {data.images && data.images.length > 0 ? (
           <Box
             component="img"
-            src={getCoverImage()}
+            src={getCoverImage() ?? "/images/placeholder.jpg"}
             alt={data.propertyType || "ملک"}
             sx={{
               width: "100%",
@@ -406,7 +406,7 @@ export default function CardFile({
               justifyContent: "space-between",
             }}
           >
-                  <Typography
+            <Typography
               variant="h6"
               sx={{ fontWeight: 800, color: "primary.main" }}
             >
@@ -418,7 +418,6 @@ export default function CardFile({
             >
               تومان
             </Typography>
-      
           </Stack>
         </Box>
 
@@ -509,7 +508,7 @@ export default function CardFile({
             <Button
               size="small"
               // onClick={() => onDetailsClick?.(data)}
-              onClick={()=>router.push('/property/1')}
+              onClick={() => router.push("/property/1")}
               variant="contained"
               sx={{
                 borderRadius: "8px",
@@ -531,7 +530,7 @@ export default function CardFile({
               gap: 0.5,
             }}
           >
-               {isVerified ? (
+            {isVerified ? (
               <VerifiedRoundedIcon sx={{ fontSize: 16, color: "#10B981" }} />
             ) : (
               <Box
@@ -549,7 +548,6 @@ export default function CardFile({
             >
               {personName}
             </Typography>
-         
           </Stack>
         </Stack>
       </CardContent>

@@ -5,12 +5,10 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 
 type Props = {
   title?: string;
-  address?: string;
 };
 
-export default function PropertyTitleHeader({
+export default function TitleHeader({
   title = "پنت‌هاوس مجلل ۱۸۵ متری ۳ خوابه کلیدنخورده با ویوی ابدی پایتخت و ۲ تراس گردن",
-  address = "تهران، سعادت‌آباد بالاتر از میدان کاج، خیابان مروارید",
 }: Props) {
   return (
     <Box
@@ -49,31 +47,7 @@ export default function PropertyTitleHeader({
         {title}
       </Typography>
 
-      {/* ==================== آدرس با آیکون ==================== */}
-      <Stack
-        sx={{display:'flex',flexDirection:'row',alignItems:'flex-start',gap:.8, minWidth: 0 }}
-      >
-        <LocationOnIcon
-          sx={{
-            color: "#1a73e8",
-            fontSize: { xs: 16, sm: 18, md: 20 },
-            flexShrink: 0,
-            mt: { xs: "2px", md: "3px" },
-          }}
-        />
-        <Typography
-          variant="body2"
-          sx={{
-            color: "#7a8291",
-            fontSize: { xs: "0.72rem", sm: "0.8rem", md: "0.875rem" },
-            lineHeight: { xs: 1.7, md: 1.8 },
-            fontWeight: 500,
-            wordBreak: "break-word",
-          }}
-        >
-          {address}
-        </Typography>
-      </Stack>
+    
     </Box>
   );
 }

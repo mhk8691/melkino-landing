@@ -3,7 +3,7 @@ import PropertyDetails, {
   RequestPropertyData,
 } from "@/app/Components/PropertyDetail/PropertyDetail";
 import PropertyGallery from "@/app/Components/PropertyDetail/PropertyGallery";
-import PropertyTitleHeader from "@/app/Components/PropertyDetail/PropertyTitleHeader";
+import TitleHeader from "@/app/Components/PropertyDetail/TitleHeader";
 import { Container } from "@mui/material";
 import React from "react";
 
@@ -72,7 +72,7 @@ export default function page() {
         mt: 2,
       }}
     >
-      <PropertyTitleHeader  />
+      <TitleHeader  />
       <PropertyGallery />
       <PropertyDetails mode="file" data={fileData} />
     </Container>
