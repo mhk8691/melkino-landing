@@ -22,6 +22,7 @@ import PersonOutlineRoundedIcon from "@mui/icons-material/PersonOutlineRounded";
 import PhoneInTalkRoundedIcon from "@mui/icons-material/PhoneInTalkRounded";
 import { PropertyType } from "@/app/Core/types";
 import { getPropertyTypeIcon } from "./PropertyTypeIcon";
+import { useRouter } from "next/navigation";
 
 export interface CardFileProps {
   /** داده کامل از نوع PropertyType شامل تمام فیلدهای مشترک و اختصاصی */
@@ -75,7 +76,7 @@ export default function CardFile({
   onDetailsClick,
 }: CardFileProps) {
   const [bookmarked, setBookmarked] = React.useState(initialBookmarked);
-
+  const router = useRouter()
   const handleBookmarkClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     const next = !bookmarked;
@@ -507,7 +508,8 @@ export default function CardFile({
           <Stack direction="row" spacing={0.5}>
             <Button
               size="small"
-              onClick={() => onDetailsClick?.(data)}
+              // onClick={() => onDetailsClick?.(data)}
+              onClick={()=>router.push('/property/1')}
               variant="contained"
               sx={{
                 borderRadius: "8px",

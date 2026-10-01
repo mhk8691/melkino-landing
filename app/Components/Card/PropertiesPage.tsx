@@ -104,7 +104,7 @@ export default function PropertiesPage() {
           <FileToolbar />
           {[1, 2, 3, 4, 5].map((item) => (
             <Grid size={{ xs: 12, sm: 6, lg: 4, xl: 3 }} key={item}>
-              <CardFile data={propertyItem} />
+              <CardFile data={propertyItem}  />
             </Grid>
           ))}
           <PaginationBar
