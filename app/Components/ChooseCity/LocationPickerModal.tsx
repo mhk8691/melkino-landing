@@ -489,8 +489,8 @@ export default function LocationPickerModal({
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
-    <Dialog
-      open={true}
+    <Dialog 
+      open={open}
       onClose={onClose}
       fullScreen={fullScreen}
       fullWidth

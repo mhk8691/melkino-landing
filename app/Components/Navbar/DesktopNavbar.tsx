@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -21,10 +21,11 @@ import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOu
 import StarRoundedIcon from '@mui/icons-material/StarRounded';
 
 import { MAIN_ITEMS, NAV_ITEMS, isNavActive } from './nav-items';
+import LocationPickerModal from '../ChooseCity/LocationPickerModal';
 
 
 
-function CitySelector() {
+function CitySelector({setOpen}:{setOpen:React.Dispatch<React.SetStateAction<boolean>>}) {
   return (
     <Button
       color="inherit"
@@ -43,6 +44,7 @@ function CitySelector() {
         whiteSpace: 'nowrap',
         '&:hover': { bgcolor: 'grey.200' },
       }}
+      onClick={()=>setOpen(true)}
     >
       <LocationOnOutlinedIcon color="primary" sx={{ fontSize: 18 }} />
       تهران
@@ -56,8 +58,10 @@ export default function DesktopNavbar() {
   const saved = NAV_ITEMS.find((i) => i.key === 'saved')!;
   const profile = NAV_ITEMS.find((i) => i.key === 'profile')!;
   const SavedIcon = isNavActive(pathname, saved.href) ? saved.activeIcon : saved.icon;
+  const [open,setOpen] = useState(false)
 
   return (
+   <>
     <AppBar
       position="sticky"
       elevation={0}
@@ -101,7 +105,7 @@ export default function DesktopNavbar() {
               />
             </Box>
           </Link>
-          <CitySelector />
+          <CitySelector setOpen={setOpen} />
         </Box>
 
         <Box
@@ -232,5 +236,7 @@ export default function DesktopNavbar() {
         </Box>
       </Toolbar>
     </AppBar>
+    <LocationPickerModal open={open} onClose={()=>setOpen(false)} />
+   </>
   );
 }
