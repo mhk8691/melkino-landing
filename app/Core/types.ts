@@ -117,7 +117,6 @@ export type PropertyType = {
 
     description: string
 
-    internalNote: string
 
 
 

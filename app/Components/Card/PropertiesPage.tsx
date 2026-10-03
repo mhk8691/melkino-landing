@@ -8,25 +8,24 @@ import ApartmentIcon from "@mui/icons-material/Apartment";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";
 import StatsFilterBar, { FilterItem } from "../Filter/StatsFilterBar";
 import FileToolbar from "../Sort/Sort";
-import PaginationBar from "../Pagination/PaginationBar";
 import ResponsiveFilter from "../Filter/ResponsiveFilter";
 type TabType = "vip" | "all" | "requests";
 const ITEMS: FilterItem<TabType>[] = [
   {
     key: "vip",
-    value: "فایل‌های ویژه و VIP",
+    value: "فایل‌های ویژه",
     icon: StarIcon,
     color: "#d99a1e",
   },
   {
     key: "all",
-    value: "همه فایل‌های ملکی",
+    value: "فایل‌های ملکی",
     icon: ApartmentIcon,
     color: "#2563c9",
   },
   {
     key: "requests",
-    value: "تقاضا و درخواست‌های ملک",
+    value: "درخواست‌های ملکی",
     icon: ManageSearchIcon,
     color: "#7b3fb0",
   },
@@ -34,9 +33,7 @@ const ITEMS: FilterItem<TabType>[] = [
 export default function PropertiesPage() {
   const [tab, setTab] = useState<TabType>("vip");
 
-  // pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 24;
+
   return (
     <>
       <StatsFilterBar items={ITEMS} value={tab} onChange={setTab} />
@@ -57,16 +54,7 @@ export default function PropertiesPage() {
               <CardFile data={propertyItem}  />
             </Grid>
           ))}
-          <PaginationBar
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={(page) => {
-              setCurrentPage(page);
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }}
-            siblingCount={1}
-            boundaryCount={1}
-          />
+ 
         </Grid>
       </Grid>
     </>

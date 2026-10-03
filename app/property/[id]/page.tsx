@@ -35,7 +35,6 @@ const fileData: FilePropertyData = {
   ownerPhone2: "02188451234",
   ownerJob: "مهندس",
   description: "واحد نوساز، نور عالی، نزدیک مترو و مراکز خرید.",
-  internalNote: "مالک عجله برای فروش دارد، قابل مذاکره.",
 };
 
 // دیتای درخواست (نمونه)

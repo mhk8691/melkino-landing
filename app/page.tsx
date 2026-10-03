@@ -46,7 +46,6 @@ export const propertyItem: PropertyType = {
   ],
   description:
     "آپارتمان سوپرلوکس ۱۶۵ متری تک‌واحدی، نورگیری عالی از جنوب و شمال.",
-  internalNote: "مالک فروشنده واقعی است و تخفیف جزئی پای معامله می‌دهد.",
   buildYear: "۱۳۹۹",
   advisorName: "مهندس اخوان",
   agencyName: "املاک بزرگ زعفرانیه",
@@ -97,7 +96,6 @@ export const requestItem: PropertyType = {
   ownerJob: "",
   images: [],
   description: "متقاضی خانواده ۳ نفره، آماده عقد قرارداد و تخلیه فوری.",
-  internalNote: "بودجه نقد و تایید شده است.",
 };
 
 export const SAMPLE_PROPERTY = {
@@ -128,7 +126,6 @@ export const SAMPLE_PROPERTY = {
   ownerPhone2: "02188451234",
   ownerJob: "مهندس",
   description: "واحد نوساز، نور عالی، نزدیک مترو و مراکز خرید.",
-  internalNote: "مالک عجله برای فروش دارد، قابل مذاکره.",
   images: [
     "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80",
     "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",

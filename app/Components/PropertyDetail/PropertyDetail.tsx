@@ -53,7 +53,6 @@ export type FilePropertyData = {
   ownerPhone2: string;
   ownerJob: string;
   description: string;
-  internalNote: string;
 };
 
 export type RequestPropertyData = {
@@ -461,9 +460,9 @@ export default function PropertyDetails(props: PropertyDetailsProps) {
           </Stack>
         </BaseCard>
 
-        {(d.description || d.internalNote) && (
+        {(d.description) && (
           <BaseCard>
-            <SectionHeader icon={NoteIcon} title="توضیحات و یادداشت" />
+            <SectionHeader icon={NoteIcon} title="توضیحات" />
             <Stack spacing={{ xs: 1, md: 1.2 }}>
               {d.description && (
                 <Box
@@ -494,36 +493,7 @@ export default function PropertyDetails(props: PropertyDetailsProps) {
                   </Typography>
                 </Box>
               )}
-              {d.internalNote && (
-                <Box
-                  sx={{
-                    p: { xs: 1.5, md: 2 },
-                    backgroundColor: "#fef9e7",
-                    borderRadius: 3,
-                    border: "1px solid #fde68a",
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      color: "#d99a1e",
-                      fontSize: { xs: "0.68rem", md: "0.75rem" },
-                      fontWeight: 700,
-                      mb: 0.5,
-                    }}
-                  >
-                    یادداشت داخلی:
-                  </Typography>
-                  <Typography
-                    sx={{
-                      color: "#1a1a1a",
-                      fontSize: { xs: "0.75rem", md: "0.85rem" },
-                      lineHeight: 1.9,
-                    }}
-                  >
-                    {d.internalNote}
-                  </Typography>
-                </Box>
-              )}
+          
             </Stack>
           </BaseCard>
         )}
