@@ -1,6 +1,9 @@
 'use client';
-import { BottomNavigation, BottomNavigationAction, Box } from '@mui/material';
-
+import { useState, MouseEvent } from 'react';
+import { BottomNavigation, BottomNavigationAction, Box, Menu, MenuItem, Typography } from '@mui/material';
+import HomeWorkRoundedIcon from '@mui/icons-material/HomeWorkRounded';
+import ManageSearchRoundedIcon from '@mui/icons-material/ManageSearchRounded';
+import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { isNavActive, NAV_ITEMS } from './nav-items';
@@ -9,9 +12,31 @@ const NAVY = '#1a237e';
 const NAVY_SOFT = 'rgba(26, 35, 126, 0.10)';
 const INACTIVE = '#6b7280';
 
+const SUBMIT_OPTIONS = [
+  {
+    href: 'https://panel.mlkino.com/files/create',
+    title: 'ثبت ملک',
+    caption: 'ویژه مالک و موجر',
+    icon: HomeWorkRoundedIcon,
+  },
+  {
+    href: 'https://panel.mlkino.com/requests/create',
+    title: 'درخواست ملک',
+    caption: 'ویژه خریدار و مستاجر',
+    icon: ManageSearchRoundedIcon,
+  },
+];
+
 export default function MobileBottomNav() {
   const pathname = usePathname();
   const value = NAV_ITEMS.findIndex((item) => isNavActive(pathname, item.href));
+
+  // مدیریت وضعیت منوی بازشونده برای دکمه ثبت
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const isSubmitMenuOpen = Boolean(anchorEl);
+
+  const handleSubmitClick = (event: MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);
+  const handleClose = () => setAnchorEl(null);
 
   return (
     <Box
@@ -81,6 +106,16 @@ export default function MobileBottomNav() {
           },
           '& .Mui-selected': { color: NAVY },
 
+          // حالت فعال آیتم ثبت (وقتی منو باز است) مثل آیتم انتخاب‌شده
+          '& .submit-open': {
+            color: NAVY,
+            '& .MuiBottomNavigationAction-label': { fontWeight: 700 },
+            '& .nav-pill': {
+              backgroundColor: NAVY_SOFT,
+              transform: 'scale(1.06)',
+            },
+          },
+
           '& .MuiBottomNavigationAction-root.Mui-focusVisible': {
             outline: `2px solid ${NAVY}`,
             outlineOffset: -2,
@@ -92,26 +127,119 @@ export default function MobileBottomNav() {
           },
         }}
       >
-        {NAV_ITEMS.map(({ key, label, href, icon: Icon, activeIcon: ActiveIcon }, index) => (
-          <BottomNavigationAction
-            key={key}
+        {NAV_ITEMS.map(({ key, label, href, icon: Icon, activeIcon: ActiveIcon }, index) => {
+          const isSubmit = key === 'submit';
+          const isActive = value === index || (isSubmit && isSubmitMenuOpen);
+
+          return (
+            <BottomNavigationAction
+              key={key}
+              {...(!isSubmit
+                ? { component: Link, href }
+                : {
+                    onClick: handleSubmitClick,
+                    className: isSubmitMenuOpen ? 'submit-open' : undefined,
+                    'aria-haspopup': 'menu' as const,
+                    'aria-expanded': isSubmitMenuOpen,
+                  })}
+              aria-current={value === index ? 'page' : undefined}
+              label={label}
+              disableRipple
+              icon={
+                <span className="nav-pill">
+                  {isActive ? (
+                    <ActiveIcon sx={{ fontSize: { xs: 18, sm: 22 } }} />
+                  ) : (
+                    <Icon sx={{ fontSize: { xs: 18, sm: 22 } }} />
+                  )}
+                </span>
+              }
+            />
+          );
+        })}
+      </BottomNavigation>
+
+      {/* منوی بازشونده دکمه ثبت */}
+      <Menu
+        anchorEl={anchorEl}
+        open={isSubmitMenuOpen}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        transformOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        slotProps={{
+          backdrop: {
+            sx: { backgroundColor: 'rgba(15, 20, 60, 0.28)', backdropFilter: 'blur(3px)' },
+          },
+          paper: {
+            sx: {
+              mb: 1.5,
+              p: 1,
+              minWidth: 260,
+              borderRadius: '20px',
+              overflow: 'visible',
+              boxShadow: '0 16px 40px rgba(26, 35, 126, 0.25)',
+              // فلش کوچک زیر منو
+              '&::after': {
+                content: '""',
+                position: 'absolute',
+                bottom: -6,
+                left: '50%',
+                width: 14,
+                height: 14,
+                bgcolor: 'background.paper',
+                transform: 'translateX(-50%) rotate(45deg)',
+                borderRadius: '3px',
+              },
+            },
+          },
+          list: { sx: { p: 0, display: 'flex', flexDirection: 'column', gap: 0.5 } },
+        }}
+      >
+        {SUBMIT_OPTIONS.map(({ href, title, caption, icon: OptionIcon }) => (
+          <MenuItem
+            key={href}
             component={Link}
             href={href}
-            aria-current={value === index ? 'page' : undefined}
-            label={label}
-            disableRipple
-            icon={
-              <span className="nav-pill">
-                {value === index ? (
-                  <ActiveIcon sx={{ fontSize: { xs: 18, sm: 22 } }} />
-                ) : (
-                  <Icon sx={{ fontSize: { xs: 18, sm: 22 } }} />
-                )}
-              </span>
-            }
-          />
+            onClick={handleClose}
+            sx={{
+              gap: 1.5,
+              p: 1.25,
+              borderRadius: '14px',
+              '&:hover': { backgroundColor: NAVY_SOFT },
+            }}
+          >
+            <Box
+              sx={{
+                width: 42,
+                height: 42,
+                flexShrink: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '12px',
+                color: NAVY,
+                backgroundColor: NAVY_SOFT,
+              }}
+            >
+              <OptionIcon sx={{ fontSize: 24 }} />
+            </Box>
+
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Typography variant="body2" sx={{ fontWeight: 700, color: NAVY, fontFamily: 'inherit' }}>
+                {title}
+              </Typography>
+              <Typography
+                variant="caption"
+                sx={{ color: 'text.secondary', fontSize: '0.72rem', fontFamily: 'inherit' }}
+              >
+                {caption}
+              </Typography>
+            </Box>
+
+            <ChevronLeftRoundedIcon sx={{ color: INACTIVE, fontSize: 20 }} />
+          </MenuItem>
         ))}
-      </BottomNavigation>
+      </Menu>
     </Box>
   );
 }

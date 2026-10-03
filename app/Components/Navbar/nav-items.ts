@@ -1,16 +1,15 @@
 import type { SvgIconComponent } from '@mui/icons-material';
 
-import FolderOpenOutlinedIcon from '@mui/icons-material/FolderOpenOutlined';
 import FolderIcon from '@mui/icons-material/Folder';
-import StarBorderRoundedIcon from '@mui/icons-material/StarBorderRounded';
 import StarRoundedIcon from '@mui/icons-material/StarRounded';
-import RequestQuoteOutlinedIcon from '@mui/icons-material/RequestQuoteOutlined';
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import PersonIcon from '@mui/icons-material/Person';
 import BookmarkBorderRoundedIcon from '@mui/icons-material/BookmarkBorderRounded';
 import BookmarkRoundedIcon from '@mui/icons-material/BookmarkRounded';
-
+import AddIcon from '@mui/icons-material/Add';
+import SupportAgentIcon from '@mui/icons-material/SupportAgent';
+import HomeIcon from '@mui/icons-material/Home';
 export type NavItem = {
   key: 'home' | 'submit' | 'support' | 'profile' | 'saved';
   label: string;
@@ -21,9 +20,9 @@ export type NavItem = {
 };
 
 export const NAV_ITEMS: NavItem[] = [
-  { key: 'home', label: 'خانه', href: '/', icon: FolderOpenOutlinedIcon, activeIcon: FolderIcon, group: 'main' },
-  { key: 'submit', label: 'ثبت', href: '/vip', icon: StarBorderRoundedIcon, activeIcon: StarRoundedIcon, group: 'main' },
-  { key: 'support', label: 'چت و تماس', href: '/support', icon: RequestQuoteOutlinedIcon, activeIcon: RequestQuoteIcon, group: 'main' },
+  { key: 'home', label: 'خانه', href: '/', icon: HomeIcon, activeIcon: FolderIcon, group: 'main' },
+  { key: 'submit', label: 'ثبت', href: '/vip', icon: AddIcon, activeIcon: StarRoundedIcon, group: 'main' },
+  { key: 'support', label: 'چت و تماس', href: '/support', icon: SupportAgentIcon, activeIcon: RequestQuoteIcon, group: 'main' },
   { key: 'saved', label: 'ذخیره‌شده‌ها', href: '/saved', icon: BookmarkBorderRoundedIcon, activeIcon: BookmarkRoundedIcon, group: 'account' },
   { key: 'profile', label: 'ملکینوی من', href: '/panel', icon: PersonOutlineOutlinedIcon, activeIcon: PersonIcon, group: 'account' },
 ];
