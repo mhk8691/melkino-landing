@@ -20,42 +20,41 @@ import PhotoCameraRoundedIcon from "@mui/icons-material/PhotoCameraRounded";
 import VerifiedRoundedIcon from "@mui/icons-material/VerifiedRounded";
 import PersonOutlineRoundedIcon from "@mui/icons-material/PersonOutlineRounded";
 import PhoneInTalkRoundedIcon from "@mui/icons-material/PhoneInTalkRounded";
+import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
+import TourRoundedIcon from "@mui/icons-material/TourRounded";
+import EventAvailableRoundedIcon from "@mui/icons-material/EventAvailableRounded";
+import HandshakeRoundedIcon from "@mui/icons-material/HandshakeRounded";
 import { PropertyType } from "@/app/Core/types";
 import { getPropertyTypeIcon } from "./PropertyTypeIcon";
 import { useRouter } from "next/navigation";
 
 export interface CardFileProps {
-  /** داده کامل از نوع PropertyType شامل تمام فیلدهای مشترک و اختصاصی */
   data: PropertyType;
-  /** برچسب ویژه اختیاری، مثل «فایل ویژه» یا «VIP» */
   badgeLabel?: string;
-  /** وضعیت اولیه نشان‌شده بودن (بوکمارک) */
   initialBookmarked?: boolean;
-  /** آیا مسئول/مشاور تایید شده است */
   isVerified?: boolean;
-  /** کال‌بک کلیک روی دکمه نشان کردن */
   onBookmarkToggle?: (bookmarked: boolean) => void;
-  /** کال‌بک کلیک روی دکمه مشاهده جزئیات */
   onDetailsClick?: (data: PropertyType) => void;
+  /** ثبت بازدید (فقط در mode="file") */
+  onVisitRequest?: (data: PropertyType) => void;
+  /** من دارم (فقط در mode="request") */
+  onIHave?: (data: PropertyType) => void;
+  mode?: "request" | "file";
 }
 
-/** تابع کمکی فرمت اعداد */
 const formatNumber = (num?: number) => {
   if (num === undefined || num === null || isNaN(num)) return "0";
   return num.toLocaleString("fa-IR");
 };
 
-/** تابع کمکی ترکیب فیلدهای مشترک موقعیت مکانی */
 const getFormattedLocation = (data: PropertyType) => {
   const parts: string[] = [];
   if (data.city) parts.push(data.city);
-
   if (data.district) {
     parts.push(
       Array.isArray(data.district) ? data.district.join("، ") : data.district,
     );
   }
-
   if (data.neighborhood) {
     parts.push(
       Array.isArray(data.neighborhood)
@@ -63,7 +62,6 @@ const getFormattedLocation = (data: PropertyType) => {
         : data.neighborhood,
     );
   }
-
   return parts.length > 0 ? parts.join("، ") : "موقعیت مشخص نشده";
 };
 
@@ -74,9 +72,13 @@ export default function CardFile({
   isVerified = false,
   onBookmarkToggle,
   onDetailsClick,
+  onVisitRequest,
+  onIHave,
+  mode = "file",
 }: CardFileProps) {
   const [bookmarked, setBookmarked] = React.useState(initialBookmarked);
   const router = useRouter();
+
   const handleBookmarkClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     const next = !bookmarked;
@@ -92,7 +94,6 @@ export default function CardFile({
     return "نامشخص";
   };
 
-  // محاسبه قیمت بر اساس فیلدهای مشترک
   const isRentType =
     data.contractType === "رهن و اجاره" || data.contractType === "اجاره";
   const displayPriceValue = isRentType
@@ -101,6 +102,7 @@ export default function CardFile({
 
   const personName =
     data.assignedTo || data.advisorName || data.ownerName || "کارشناس مربوطه";
+
   const getCoverImage = () => {
     if (data.images && data.images.length > 0) {
       const firstImg = data.images[0];
@@ -109,6 +111,33 @@ export default function CardFile({
     }
     return null;
   };
+
+  // آدرس تور مجازی (در صورت وجود در تایپ، as any را حذف کن)
+  const virtualTourUrl: string | undefined =
+    (data as any).virtualTourUrl || (data as any).tourUrl;
+
+  const handleDetails = () => {
+    if (onDetailsClick) onDetailsClick(data);
+    else router.push(`/property/${data.id ?? 1}`);
+  };
+
+  const handleViewProperty = () => {
+    if (virtualTourUrl) {
+      window.open(virtualTourUrl, "_blank", "noopener,noreferrer");
+    } else {
+      // در صورت نبود تور مجازی، می‌توانی به صفحه ملک بروی
+      router.push(`/property/${data.id ?? 1}`);
+    }
+  };
+
+  const handleVisitRequest = () => {
+    onVisitRequest?.(data);
+  };
+
+  const handleIHave = () => {
+    onIHave?.(data);
+  };
+
   return (
     <Card
       elevation={0}
@@ -130,7 +159,6 @@ export default function CardFile({
       }}
     >
       {/* تصویر و بج‌ها */}
-      {/* بخش تصویر / آیکون fallback */}
       <Box
         sx={{
           position: "relative",
@@ -186,16 +214,10 @@ export default function CardFile({
           </Box>
         )}
 
-        {/* بج‌های راست (RTL) */}
         <Stack
           direction="row"
           spacing={1}
-          sx={{
-            position: "absolute",
-            top: 12,
-            left: 12,
-            zIndex: 1,
-          }}
+          sx={{ position: "absolute", top: 12, left: 12, zIndex: 1 }}
         >
           {badgeLabel && (
             <Chip
@@ -224,7 +246,6 @@ export default function CardFile({
           )}
         </Stack>
 
-        {/* دکمه بوکمارک */}
         <IconButton
           onClick={handleBookmarkClick}
           aria-label="نشان کردن ملک"
@@ -247,7 +268,6 @@ export default function CardFile({
           )}
         </IconButton>
 
-        {/* شمارنده عکس‌ها (فقط در صورت وجود عکس) */}
         {data.images && data.images.length > 0 && (
           <Stack
             direction="row"
@@ -320,7 +340,7 @@ export default function CardFile({
           </Typography>
         </Box>
 
-        {/* ردیف متریک‌های مشترک (متراژ، تعداد اتاق، طبقه) */}
+        {/* متریک‌ها */}
         <Box
           sx={{
             display: "grid",
@@ -380,7 +400,7 @@ export default function CardFile({
           </Box>
         </Box>
 
-        {/* بخش قیمت */}
+        {/* قیمت */}
         <Box
           sx={{
             pt: 1,
@@ -421,7 +441,7 @@ export default function CardFile({
           </Stack>
         </Box>
 
-        {/* فیلدهای اختیاری درخواست‌کننده (در صورت وجود) */}
+        {/* اطلاعات متقاضی (درخواست) */}
         {(data.requesterName || data.requesterPhone) && (
           <Box
             sx={{
@@ -493,45 +513,21 @@ export default function CardFile({
           </Box>
         )}
 
-        <Divider sx={{ borderColor: "background.border" }} />
+        {/* خط جداکننده */}
+        <Divider sx={{ borderColor: "background.border", my: 0.5 }} />
 
-        {/* فوتر کارت */}
+        {/* نام مشاور / تایید */}
         <Stack
+          direction="row"
           sx={{
-            display: "flex",
-            flexDirection: "row",
             alignItems: "center",
             justifyContent: "space-between",
+            gap: 1,
           }}
         >
-          <Stack direction="row" spacing={0.5}>
-            <Button
-              size="small"
-              // onClick={() => onDetailsClick?.(data)}
-              onClick={() => router.push("/property/1")}
-              variant="contained"
-              sx={{
-                borderRadius: "8px",
-                fontWeight: 700,
-                fontSize: 12,
-                boxShadow: "none",
-                px: 1.5,
-                "&:hover": { boxShadow: "none" },
-              }}
-            >
-              مشاهده جزئیات
-            </Button>
-          </Stack>
-          <Stack
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 0.5,
-            }}
-          >
+          <Stack direction="row" spacing={0.75} sx={{ alignItems: "center" }}>
             {isVerified ? (
-              <VerifiedRoundedIcon sx={{ fontSize: 16, color: "#10B981" }} />
+              <VerifiedRoundedIcon sx={{ fontSize: 18, color: "#10B981" }} />
             ) : (
               <Box
                 sx={{
@@ -539,15 +535,136 @@ export default function CardFile({
                   height: 8,
                   borderRadius: "50%",
                   bgcolor: "#10B981",
+                  boxShadow: "0 0 0 3px rgba(16,185,129,0.15)",
                 }}
               />
             )}
             <Typography
               variant="caption"
-              sx={{ color: "text.secondary", fontSize: 12 }}
+              sx={{
+                color: "text.secondary",
+                fontSize: 12,
+                fontWeight: 600,
+                maxWidth: 180,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
             >
               {personName}
             </Typography>
+          </Stack>
+
+          {mode === "request" && (
+            <Chip
+              size="small"
+              label="درخواست"
+              sx={{
+                height: 20,
+                fontSize: 10,
+                fontWeight: 700,
+                bgcolor: alpha("#1976d2", 0.1),
+                color: "primary.main",
+              }}
+            />
+          )}
+        </Stack>
+
+        {/* ناحیه دکمه‌ها */}
+        <Stack spacing={1} sx={{ mt: 0.5 }}>
+          {/* دکمه اصلی: مشاهده جزئیات */}
+          <Button
+            fullWidth
+            onClick={handleDetails}
+            variant="contained"
+            startIcon={<VisibilityRoundedIcon sx={{ fontSize: 18 }} />}
+            sx={{
+              borderRadius: "10px",
+              fontWeight: 700,
+              fontSize: 13,
+              py: 1,
+              boxShadow: "0 4px 12px rgba(25,118,210,0.25)",
+              transition: "all 0.2s ease",
+              "&:hover": {
+                boxShadow: "0 6px 16px rgba(25,118,210,0.35)",
+                transform: "translateY(-1px)",
+              },
+            }}
+          >
+            مشاهده جزئیات
+          </Button>
+
+          {/* دکمه‌های ثانویه بر اساس mode */}
+          <Stack direction="row" spacing={1}>
+            {mode === "file" ? (
+              <>
+                <Button
+                  fullWidth
+                  onClick={handleViewProperty}
+                  variant="outlined"
+                  startIcon={<TourRoundedIcon sx={{ fontSize: 16 }} />}
+                  sx={{
+                    borderRadius: "10px",
+                    fontWeight: 700,
+                    fontSize: 12,
+                    py: 0.9,
+                    borderColor: alpha("#1976d2", 0.4),
+                    color: "primary.main",
+                    "&:hover": {
+                      borderColor: "primary.main",
+                      bgcolor: alpha("#1976d2", 0.06),
+                    },
+                  }}
+                >
+                  مشاهده ملک
+                </Button>
+                <Button
+                  fullWidth
+                  onClick={handleVisitRequest}
+                  variant="outlined"
+                  color="success"
+                  startIcon={
+                    <EventAvailableRoundedIcon sx={{ fontSize: 16 }} />
+                  }
+                  sx={{
+                    borderRadius: "10px",
+                    fontWeight: 700,
+                    fontSize: 12,
+                    py: 0.9,
+                    borderColor: alpha("#10B981", 0.5),
+                    color: "#059669",
+                    "&:hover": {
+                      borderColor: "#10B981",
+                      bgcolor: alpha("#10B981", 0.08),
+                    },
+                  }}
+                >
+                  ثبت بازدید
+                </Button>
+              </>
+            ) : (
+              <Button
+                fullWidth
+                onClick={handleIHave}
+                variant="outlined"
+                color="secondary"
+                startIcon={<HandshakeRoundedIcon sx={{ fontSize: 16 }} />}
+                sx={{
+                  borderRadius: "10px",
+                  fontWeight: 700,
+                  fontSize: 12,
+                  py: 0.9,
+                  borderColor: alpha("#9c27b0", 0.5),
+                  color: "#7b1fa2",
+                  "&:hover": {
+                    borderColor: "#9c27b0",
+                    bgcolor: alpha("#9c27b0", 0.08),
+                  },
+                }}
+              >
+                من دارم
+              </Button>
+            )}
           </Stack>
         </Stack>
       </CardContent>

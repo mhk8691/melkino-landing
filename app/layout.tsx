@@ -5,7 +5,6 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import { Box, CssBaseline, ThemeProvider } from "@mui/material";
 import { cacheRtlOptions, theme } from "./theme";
 import Navbar from "./Components/Navbar/Navbar";
-import Footer from "./Components/Footer/Footer";
 
 const vazirmatn = Vazirmatn({
   subsets: ["arabic"],
