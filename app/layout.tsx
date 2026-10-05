@@ -42,7 +42,6 @@ export default function RootLayout({
                 {children}
               </Box>
 
-              <Footer />
             </Box>
           </ThemeProvider>
         </AppRouterCacheProvider>
