@@ -22,8 +22,47 @@ import HomeWorkIcon from "@mui/icons-material/HomeWork";
 import NoteIcon from "@mui/icons-material/Note";
 import ThermostatIcon from "@mui/icons-material/Thermostat";
 import AcUnitIcon from "@mui/icons-material/AcUnit";
+import StoreIcon from "@mui/icons-material/Store";
+import BadgeIcon from "@mui/icons-material/Badge";
 
 export type PropertyMode = "file" | "request";
+
+// ---------- انواع جدید ----------
+export interface AgentsType {
+  id: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  profileImage?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+  role: "real_estate_agent" | "accountant" | "secretary";
+  agencyId: string;
+  agencyName: string;
+  homeAddress: string;
+  workAddress: string;
+  registrationData: Record<string, unknown>;
+}
+
+export interface AgencyType {
+  id: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  profileImage?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+  role: string;
+  agencyName: string;
+  postalCode: string;
+  maritalStatus: "married" | "single";
+  officeAddress: string;
+  officePropertyStatus: "owner" | "tenant";
+  leaseEndDate?: string | null;
+  logo?: string | null;
+  managerImage?: string | null;
+  registrationData: Record<string, unknown>;
+}
 
 export type FilePropertyData = {
   id: number;
@@ -48,11 +87,10 @@ export type FilePropertyData = {
   totalFloor: number;
   direction: string;
   amenities: string[];
-  ownerName: string;
-  ownerPhone: string;
-  ownerPhone2: string;
-  ownerJob: string;
   description: string;
+  // به جای اطلاعات مالک، اطلاعات کارشناس و املاک
+  agent?: AgentsType;
+  agency?: AgencyType;
 };
 
 export type RequestPropertyData = {
@@ -69,6 +107,7 @@ export type RequestPropertyData = {
   roomCount: number;
   requesterName: string;
   requesterPhone: string;
+  // توجه: در حالت درخواست، اطلاعات کارشناس و املاک وجود ندارد
 };
 
 export type PropertyDetailsProps =
@@ -309,6 +348,49 @@ function BaseCard({ children }: { children: React.ReactNode }) {
   );
 }
 
+// ---------- بخش اطلاعات کارشناس و املاک (فقط فیلدهای عمومی) ----------
+function AgentAgencyCard({
+  agent,
+  agency,
+}: {
+  agent?: AgentsType;
+  agency?: AgencyType;
+}) {
+  if (!agent && !agency) return null;
+
+  const fullName = agent ? `${agent.firstName} ${agent.lastName}`.trim() : "-";
+
+  return (
+    <BaseCard>
+      <SectionHeader
+        icon={BadgeIcon}
+        title="اطلاعات کارشناس و املاک"
+        iconBg="#ede9fe"
+        iconColor="#7b3fb0"
+      />
+      <Stack spacing={{ xs: 1, md: 1.2 }}>
+        {agent && (
+          <>
+            <InfoRow label="نام کارشناس" value={fullName || "-"} icon={PersonIcon} />
+            <InfoRow label="تلفن کارشناس" value={agent.phoneNumber || "-"} icon={PhoneIcon} />
+          </>
+        )}
+        {agency && (
+          <>
+            <InfoRow label="نام املاک" value={agency.agencyName || "-"} icon={StoreIcon} />
+            <InfoRow label="تلفن املاک" value={agency.phoneNumber || "-"} icon={PhoneIcon} />
+            <InfoRow
+              label="آدرس دفتر"
+              value={agency.officeAddress || "-"}
+              icon={LocationOnIcon}
+            />
+          </>
+        )}
+      </Stack>
+    </BaseCard>
+  );
+}
+
 export default function PropertyDetails(props: PropertyDetailsProps) {
   if (props.mode === "file") {
     const d = props.data;
@@ -384,7 +466,11 @@ export default function PropertyDetails(props: PropertyDetailsProps) {
             <InfoRow label="کف‌پوش" value={d.flooring} icon={SquareFootIcon} />
             <InfoRow label="نما" value={d.facade} icon={HomeWorkIcon} />
             <InfoRow label="قیمت کل" value={formatPrice(d.totalPrice)} icon={DescriptionIcon} />
-            <InfoRow label="قیمت متری" value={formatPrice(d.pricePerMeter)} icon={DescriptionIcon} />
+            <InfoRow
+              label="قیمت متری"
+              value={formatPrice(d.pricePerMeter)}
+              icon={DescriptionIcon}
+            />
           </Stack>
         </BaseCard>
 
@@ -450,50 +536,40 @@ export default function PropertyDetails(props: PropertyDetailsProps) {
           </BaseCard>
         )}
 
-        <BaseCard>
-          <SectionHeader icon={PersonIcon} title="اطلاعات مالک" />
-          <Stack spacing={{ xs: 1, md: 1.2 }}>
-            <InfoRow label="نام مالک" value={d.ownerName} icon={PersonIcon} />
-            <InfoRow label="تلفن" value={d.ownerPhone} icon={PhoneIcon} />
-            <InfoRow label="تلفن دوم" value={d.ownerPhone2} icon={PhoneIcon} />
-            <InfoRow label="شغل" value={d.ownerJob} icon={WorkIcon} />
-          </Stack>
-        </BaseCard>
+        {/* جایگزین اطلاعات مالک */}
+        <AgentAgencyCard agent={d.agent} agency={d.agency} />
 
-        {(d.description) && (
+        {d.description && (
           <BaseCard>
             <SectionHeader icon={NoteIcon} title="توضیحات" />
             <Stack spacing={{ xs: 1, md: 1.2 }}>
-              {d.description && (
-                <Box
+              <Box
+                sx={{
+                  p: { xs: 1.5, md: 2 },
+                  backgroundColor: "#fafbfc",
+                  borderRadius: 3,
+                }}
+              >
+                <Typography
                   sx={{
-                    p: { xs: 1.5, md: 2 },
-                    backgroundColor: "#fafbfc",
-                    borderRadius: 3,
+                    color: "#7a8291",
+                    fontSize: { xs: "0.68rem", md: "0.75rem" },
+                    fontWeight: 700,
+                    mb: 0.5,
                   }}
                 >
-                  <Typography
-                    sx={{
-                      color: "#7a8291",
-                      fontSize: { xs: "0.68rem", md: "0.75rem" },
-                      fontWeight: 700,
-                      mb: 0.5,
-                    }}
-                  >
-                    توضیحات:
-                  </Typography>
-                  <Typography
-                    sx={{
-                      color: "#1a1a1a",
-                      fontSize: { xs: "0.75rem", md: "0.85rem" },
-                      lineHeight: 1.9,
-                    }}
-                  >
-                    {d.description}
-                  </Typography>
-                </Box>
-              )}
-          
+                  توضیحات:
+                </Typography>
+                <Typography
+                  sx={{
+                    color: "#1a1a1a",
+                    fontSize: { xs: "0.75rem", md: "0.85rem" },
+                    lineHeight: 1.9,
+                  }}
+                >
+                  {d.description}
+                </Typography>
+              </Box>
             </Stack>
           </BaseCard>
         )}
@@ -579,6 +655,8 @@ export default function PropertyDetails(props: PropertyDetailsProps) {
           <InfoRow label="تلفن" value={d.requesterPhone} icon={PhoneIcon} />
         </Stack>
       </BaseCard>
+
     </Box>
   );
 }
+
