@@ -1,15 +1,11 @@
 "use client";
 import { Grid } from "@mui/material";
-import React, { useState } from "react";
 import FileToolbar from "../Components/Sort/Sort";
 import CardFile from "../Components/Card/CardFile";
-import PaginationBar from "../Components/Pagination/PaginationBar";
 import { propertyItem } from "../page";
 import ResponsiveFilter from "../Components/Filter/ResponsiveFilter";
 
 export default function FilesList() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 24;
   return (
     <Grid container spacing={2}>
       <ResponsiveFilter />
@@ -27,16 +23,7 @@ export default function FilesList() {
             <CardFile data={propertyItem} />
           </Grid>
         ))}
-        <PaginationBar
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={(page) => {
-            setCurrentPage(page);
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          }}
-          siblingCount={1}
-          boundaryCount={1}
-        />
+   
       </Grid>
     </Grid>
   );

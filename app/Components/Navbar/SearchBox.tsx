@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState } from "react";
 import {
   Box,
   ClickAwayListener,
@@ -13,13 +13,13 @@ import {
   ListItemText,
   Paper,
   Typography,
-} from '@mui/material';
+} from "@mui/material";
 
-import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
-import HistoryRoundedIcon from '@mui/icons-material/HistoryRounded';
-import TrendingUpRoundedIcon from '@mui/icons-material/TrendingUpRounded';
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
+import HistoryRoundedIcon from "@mui/icons-material/HistoryRounded";
+import TrendingUpRoundedIcon from "@mui/icons-material/TrendingUpRounded";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import TuneRoundedIcon from "@mui/icons-material/TuneRounded";
 
 export type SearchSuggestion = {
   id: string | number;
@@ -38,43 +38,43 @@ type SearchBoxProps = {
 };
 
 const DEFAULT_TRENDING = [
-  'آپارتمان در تهران',
-  'آپارتمان سعادت آباد',
-  'خانه در شمال',
-  'ملک تجاری',
-  'آپارتمان نیاوران',
+  "آپارتمان در تهران",
+  "آپارتمان سعادت آباد",
+  "خانه در شمال",
+  "ملک تجاری",
+  "آپارتمان نیاوران",
 ];
 
 const DEFAULT_SUGGESTIONS: SearchSuggestion[] = [
   {
     id: 1,
-    title: 'سعادت آباد',
-    subtitle: 'تهران · منطقه ۲',
+    title: "سعادت آباد",
+    subtitle: "تهران · منطقه ۲",
   },
   {
     id: 2,
-    title: 'نیاوران',
-    subtitle: 'تهران · منطقه ۱',
+    title: "نیاوران",
+    subtitle: "تهران · منطقه ۱",
   },
   {
     id: 3,
-    title: 'پونک',
-    subtitle: 'تهران · منطقه ۵',
+    title: "پونک",
+    subtitle: "تهران · منطقه ۵",
   },
   {
     id: 4,
-    title: 'آپارتمان در تهران',
-    subtitle: 'املاک مسکونی',
+    title: "آپارتمان در تهران",
+    subtitle: "املاک مسکونی",
   },
   {
     id: 5,
-    title: 'ملک تجاری در تهران',
-    subtitle: 'املاک تجاری',
+    title: "ملک تجاری در تهران",
+    subtitle: "املاک تجاری",
   },
 ];
 
 function readHistory(storageKey: string): string[] {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return [];
   }
 
@@ -91,24 +91,22 @@ function readHistory(storageKey: string): string[] {
       return [];
     }
 
-    return parsed.filter(
-      (item): item is string => typeof item === 'string',
-    );
+    return parsed.filter((item): item is string => typeof item === "string");
   } catch {
     return [];
   }
 }
 
 export default function SearchBox({
-  placeholder = 'جستجوی ملک، منطقه یا محله...',
+  placeholder = "جستجوی ملک، منطقه یا محله...",
   suggestions = DEFAULT_SUGGESTIONS,
   trending = DEFAULT_TRENDING,
   maxHistory = 6,
-  storageKey = 'melkino-search-history',
+  storageKey = "melkino-search-history",
   onSearch,
   onFilterClick,
 }: SearchBoxProps) {
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState("");
   const [open, setOpen] = useState(false);
 
   // بدون useEffect و بدون setState در effect
@@ -125,21 +123,17 @@ export default function SearchBox({
 
     return suggestions.filter((item) => {
       const title = item.title.toLowerCase();
-      const subtitle = item.subtitle?.toLowerCase() ?? '';
+      const subtitle = item.subtitle?.toLowerCase() ?? "";
 
       return (
-        title.includes(normalizedQuery) ||
-        subtitle.includes(normalizedQuery)
+        title.includes(normalizedQuery) || subtitle.includes(normalizedQuery)
       );
     });
   }, [suggestions, normalizedQuery]);
 
   const persistHistory = (items: string[]) => {
     try {
-      window.localStorage.setItem(
-        storageKey,
-        JSON.stringify(items),
-      );
+      window.localStorage.setItem(storageKey, JSON.stringify(items));
     } catch {
       // localStorage ممکن است در بعضی محیط‌ها در دسترس نباشد
     }
@@ -155,8 +149,7 @@ export default function SearchBox({
     const newHistory = [
       cleanQuery,
       ...history.filter(
-        (item) =>
-          item.toLowerCase() !== cleanQuery.toLowerCase(),
+        (item) => item.toLowerCase() !== cleanQuery.toLowerCase(),
       ),
     ].slice(0, maxHistory);
 
@@ -184,9 +177,7 @@ export default function SearchBox({
   ) => {
     event.stopPropagation();
 
-    const newHistory = history.filter(
-      (item) => item !== itemToRemove,
-    );
+    const newHistory = history.filter((item) => item !== itemToRemove);
 
     setHistory(newHistory);
     persistHistory(newHistory);
@@ -202,35 +193,27 @@ export default function SearchBox({
     }
   };
 
-  const handleSubmit = (
-    event: React.FormEvent<HTMLFormElement>,
-  ) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     performSearch(value);
   };
 
-  const showHistory =
-    open && !normalizedQuery && history.length > 0;
+  const showHistory = open && !normalizedQuery && history.length > 0;
 
-  const showTrending =
-    open && !normalizedQuery && trending.length > 0;
+  const showTrending = open && !normalizedQuery && trending.length > 0;
 
   const showSuggestions =
-    open &&
-    Boolean(normalizedQuery) &&
-    filteredSuggestions.length > 0;
+    open && Boolean(normalizedQuery) && filteredSuggestions.length > 0;
 
   const showEmptyState =
-    open &&
-    Boolean(normalizedQuery) &&
-    filteredSuggestions.length === 0;
+    open && Boolean(normalizedQuery) && filteredSuggestions.length === 0;
 
   return (
     <ClickAwayListener onClickAway={() => setOpen(false)}>
       <Box
         sx={{
-          position: 'relative',
-          width: '100%',
+          position: "relative",
+          width: "100%",
           maxWidth: 560,
         }}
       >
@@ -239,26 +222,20 @@ export default function SearchBox({
           component="form"
           onSubmit={handleSubmit}
           sx={{
-            width: '100%',
+            width: "100%",
             height: 48,
-            display: 'flex',
-            alignItems: 'center',
-            border: '1px solid',
-            borderColor: open
-              ? 'primary.main'
-              : 'grey.300',
+            display: "flex",
+            alignItems: "center",
+            border: "1px solid",
+            borderColor: open ? "primary.main" : "grey.300",
             borderRadius: 2.5,
-            bgcolor: '#fff',
+            bgcolor: "#fff",
             px: 0.75,
-            transition: 'all .2s ease',
-            boxShadow: open
-              ? '0 0 0 3px rgba(25, 118, 210, 0.08)'
-              : 'none',
+            transition: "all .2s ease",
+            boxShadow: open ? "0 0 0 3px rgba(25, 118, 210, 0.08)" : "none",
 
-            '&:hover': {
-              borderColor: open
-                ? 'primary.main'
-                : 'grey.400',
+            "&:hover": {
+              borderColor: open ? "primary.main" : "grey.400",
             },
           }}
         >
@@ -268,12 +245,12 @@ export default function SearchBox({
             sx={{
               width: 38,
               height: 38,
-              color: 'text.secondary',
+              color: "text.secondary",
               flexShrink: 0,
 
-              '&:hover': {
-                bgcolor: 'grey.100',
-                color: 'primary.main',
+              "&:hover": {
+                bgcolor: "grey.100",
+                color: "primary.main",
               },
             }}
           >
@@ -286,13 +263,13 @@ export default function SearchBox({
             onFocus={() => setOpen(true)}
             placeholder={placeholder}
             inputProps={{
-              'aria-label': 'جستجوی ملک',
+              "aria-label": "جستجوی ملک",
             }}
             sx={{
               flex: 1,
               minWidth: 0,
               px: 1,
-              fontSize: '0.88rem',
+              fontSize: "0.88rem",
             }}
           />
 
@@ -303,12 +280,12 @@ export default function SearchBox({
             sx={{
               width: 38,
               height: 38,
-              color: 'text.secondary',
+              color: "text.secondary",
               flexShrink: 0,
 
-              '&:hover': {
-                bgcolor: 'grey.100',
-                color: 'primary.main',
+              "&:hover": {
+                bgcolor: "grey.100",
+                color: "primary.main",
               },
             }}
           >
@@ -321,15 +298,15 @@ export default function SearchBox({
           <Paper
             elevation={8}
             sx={{
-              position: 'absolute',
-              top: 'calc(100% + 8px)',
+              position: "absolute",
+              top: "calc(100% + 8px)",
               left: 0,
               right: 0,
               zIndex: 1300,
               borderRadius: 3,
-              overflow: 'hidden',
-              border: '1px solid',
-              borderColor: 'divider',
+              overflow: "hidden",
+              border: "1px solid",
+              borderColor: "divider",
             }}
           >
             {/* Suggestions */}
@@ -355,28 +332,24 @@ export default function SearchBox({
                   {filteredSuggestions.map((item) => (
                     <ListItemButton
                       key={item.id}
-                      onClick={() =>
-                        performSearch(item.title)
-                      }
+                      onClick={() => performSearch(item.title)}
                       sx={{
                         px: 2,
                         py: 1,
                         gap: 1,
 
-                        '&:hover': {
-                          bgcolor: 'grey.50',
+                        "&:hover": {
+                          bgcolor: "grey.50",
                         },
                       }}
                     >
                       <ListItemIcon
                         sx={{
                           minWidth: 38,
-                          color: 'text.secondary',
+                          color: "text.secondary",
                         }}
                       >
-                        <SearchRoundedIcon
-                          sx={{ fontSize: 20 }}
-                        />
+                        <SearchRoundedIcon sx={{ fontSize: 20 }} />
                       </ListItemIcon>
 
                       <ListItemText
@@ -384,7 +357,7 @@ export default function SearchBox({
                           <Typography
                             variant="body2"
                             sx={{
-                              fontSize: '0.88rem',
+                              fontSize: "0.88rem",
                               fontWeight: 600,
                             }}
                           >
@@ -397,7 +370,7 @@ export default function SearchBox({
                               variant="caption"
                               color="text.secondary"
                               sx={{
-                                fontSize: '0.75rem',
+                                fontSize: "0.75rem",
                               }}
                             >
                               {item.subtitle}
@@ -419,9 +392,9 @@ export default function SearchBox({
                     px: 2,
                     pt: 1,
                     pb: 0.5,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
                   }}
                 >
                   <Typography
@@ -438,11 +411,11 @@ export default function SearchBox({
                     onClick={clearHistory}
                     sx={{
                       border: 0,
-                      background: 'transparent',
-                      color: 'primary.main',
-                      cursor: 'pointer',
-                      fontSize: '0.72rem',
-                      fontFamily: 'inherit',
+                      background: "transparent",
+                      color: "primary.main",
+                      cursor: "pointer",
+                      fontSize: "0.72rem",
+                      fontFamily: "inherit",
                       p: 0,
                     }}
                   >
@@ -459,20 +432,18 @@ export default function SearchBox({
                         px: 2,
                         py: 0.85,
 
-                        '&:hover': {
-                          bgcolor: 'grey.50',
+                        "&:hover": {
+                          bgcolor: "grey.50",
                         },
                       }}
                     >
                       <ListItemIcon
                         sx={{
                           minWidth: 38,
-                          color: 'text.secondary',
+                          color: "text.secondary",
                         }}
                       >
-                        <HistoryRoundedIcon
-                          sx={{ fontSize: 20 }}
-                        />
+                        <HistoryRoundedIcon sx={{ fontSize: 20 }} />
                       </ListItemIcon>
 
                       <ListItemText
@@ -480,7 +451,7 @@ export default function SearchBox({
                           <Typography
                             variant="body2"
                             sx={{
-                              fontSize: '0.85rem',
+                              fontSize: "0.85rem",
                             }}
                           >
                             {item}
@@ -491,24 +462,17 @@ export default function SearchBox({
                       <IconButton
                         size="small"
                         aria-label={`حذف ${item}`}
-                        onClick={(event) =>
-                          removeHistoryItem(
-                            event,
-                            item,
-                          )
-                        }
+                        onClick={(event) => removeHistoryItem(event, item)}
                         sx={{
-                          color: 'grey.400',
+                          color: "grey.400",
 
-                          '&:hover': {
-                            color: 'error.main',
-                            bgcolor: 'grey.100',
+                          "&:hover": {
+                            color: "error.main",
+                            bgcolor: "grey.100",
                           },
                         }}
                       >
-                        <CloseRoundedIcon
-                          sx={{ fontSize: 17 }}
-                        />
+                        <CloseRoundedIcon sx={{ fontSize: 17 }} />
                       </IconButton>
                     </ListItemButton>
                   ))}
@@ -547,20 +511,18 @@ export default function SearchBox({
                         px: 2,
                         py: 0.85,
 
-                        '&:hover': {
-                          bgcolor: 'grey.50',
+                        "&:hover": {
+                          bgcolor: "grey.50",
                         },
                       }}
                     >
                       <ListItemIcon
                         sx={{
                           minWidth: 38,
-                          color: 'secondary.main',
+                          color: "secondary.main",
                         }}
                       >
-                        <TrendingUpRoundedIcon
-                          sx={{ fontSize: 20 }}
-                        />
+                        <TrendingUpRoundedIcon sx={{ fontSize: 20 }} />
                       </ListItemIcon>
 
                       <ListItemText
@@ -568,7 +530,7 @@ export default function SearchBox({
                           <Typography
                             variant="body2"
                             sx={{
-                              fontSize: '0.85rem',
+                              fontSize: "0.85rem",
                             }}
                           >
                             {item}
@@ -587,28 +549,22 @@ export default function SearchBox({
                 sx={{
                   px: 2,
                   py: 3,
-                  textAlign: 'center',
+                  textAlign: "center",
                 }}
               >
                 <SearchRoundedIcon
                   sx={{
                     fontSize: 30,
-                    color: 'grey.400',
+                    color: "grey.400",
                     mb: 0.5,
                   }}
                 />
 
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                >
+                <Typography variant="body2" color="text.secondary">
                   پیشنهادی برای «{value}» پیدا نشد
                 </Typography>
 
-                <Typography
-                  variant="caption"
-                  color="text.secondary"
-                >
+                <Typography variant="caption" color="text.secondary">
                   برای جستجو Enter را بزنید
                 </Typography>
               </Box>
