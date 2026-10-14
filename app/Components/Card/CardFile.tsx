@@ -1,5 +1,6 @@
 "use client";
-
+import { useState } from "react";
+import VirtualTourModal from "./VirtualTourModal";
 import * as React from "react";
 import {
   Box,
@@ -83,7 +84,10 @@ function InfoRow({
   return (
     <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
       {icon}
-      <Typography variant="caption" sx={{ fontSize: 11, color: "text.secondary" }}>
+      <Typography
+        variant="caption"
+        sx={{ fontSize: 11, color: "text.secondary" }}
+      >
         {label}
       </Typography>
       <Typography
@@ -116,6 +120,11 @@ export default function CardFile({
 }: CardFileProps) {
   const [bookmarked, setBookmarked] = React.useState(initialBookmarked);
   const [visitModalOpen, setVisitModalOpen] = React.useState(false);
+  const [virtualTourModalOpen, setVirtualTourModalOpen] = useState(false);
+
+  const handleViewProperty = () => {
+    setVirtualTourModalOpen(true);
+  };
   const router = useRouter();
 
   const coverImage = React.useMemo(() => getCoverImage(data), [data]);
@@ -123,8 +132,8 @@ export default function CardFile({
   const price = getPriceInfo(data);
   const personName = getPersonName(data);
 
-  const virtualTourUrl: string | undefined =
-    (data).virtualTourUrl;
+  // const virtualTourUrl: string | undefined =
+  //   (data).virtualTourUrl;
 
   const handleBookmarkClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -138,13 +147,13 @@ export default function CardFile({
     else router.push(`/property/${data.id ?? 1}`);
   };
 
-  const handleViewProperty = () => {
-    if (virtualTourUrl) {
-      window.open(virtualTourUrl, "_blank", "noopener,noreferrer");
-    } else {
-      router.push(`/property/${data.id ?? 1}`);
-    }
-  };
+  // const handleViewProperty = () => {
+  //   if (virtualTourUrl) {
+  //     window.open(virtualTourUrl, "_blank", "noopener,noreferrer");
+  //   } else {
+  //     router.push(`/property/${data.id ?? 1}`);
+  //   }
+  // };
 
   const handleVisitRequest = () => {
     setVisitModalOpen(true);
@@ -299,7 +308,10 @@ export default function CardFile({
               }}
             >
               <PhotoCameraRoundedIcon sx={{ fontSize: 13 }} />
-              <Typography variant="caption" sx={{ fontSize: 11, fontWeight: 600 }}>
+              <Typography
+                variant="caption"
+                sx={{ fontSize: 11, fontWeight: 600 }}
+              >
                 {formatNumber(data.images!.length)}
               </Typography>
             </Stack>
@@ -317,13 +329,21 @@ export default function CardFile({
           }}
         >
           {/* موقعیت و عنوان */}
-          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+            }}
+          >
             <Stack
               direction="row"
               spacing={0.5}
               sx={{ color: "text.muted", mb: 0.5, alignItems: "center" }}
             >
-              <LocationOnRoundedIcon sx={{ fontSize: 18, color: "primary.main" }} />
+              <LocationOnRoundedIcon
+                sx={{ fontSize: 18, color: "primary.main" }}
+              />
               <Typography variant="caption" sx={{ fontSize: 12 }}>
                 {getFormattedLocation(data)}
               </Typography>
@@ -361,7 +381,9 @@ export default function CardFile({
             <Metric
               label="اتاق"
               value={
-                data.roomCount ? `${formatNumber(data.roomCount)} خواب` : "نامشخص"
+                data.roomCount
+                  ? `${formatNumber(data.roomCount)} خواب`
+                  : "نامشخص"
               }
             />
             <Metric
@@ -381,7 +403,10 @@ export default function CardFile({
               alignItems: "flex-start",
             }}
           >
-            <Typography variant="caption" sx={{ color: "text.muted", fontSize: 12 }}>
+            <Typography
+              variant="caption"
+              sx={{ color: "text.muted", fontSize: 12 }}
+            >
               {price.label}
             </Typography>
             <Stack
@@ -392,7 +417,10 @@ export default function CardFile({
                 width: "100%",
               }}
             >
-              <Typography variant="h6" sx={{ fontWeight: 800, color: "primary.main" }}>
+              <Typography
+                variant="h6"
+                sx={{ fontWeight: 800, color: "primary.main" }}
+              >
                 {price.value}
               </Typography>
               <Typography
@@ -445,7 +473,11 @@ export default function CardFile({
           {/* نام مشاور / تایید */}
           <Stack
             direction="row"
-            sx={{ alignItems: "center", justifyContent: "space-between", gap: 1 }}
+            sx={{
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 1,
+            }}
           >
             <Stack direction="row" spacing={0.75} sx={{ alignItems: "center" }}>
               {isVerified ? (
@@ -543,7 +575,9 @@ export default function CardFile({
                     onClick={handleVisitRequest}
                     variant="outlined"
                     color="success"
-                    startIcon={<EventAvailableRoundedIcon sx={{ fontSize: 16 }} />}
+                    startIcon={
+                      <EventAvailableRoundedIcon sx={{ fontSize: 16 }} />
+                    }
                     sx={{
                       borderRadius: "10px",
                       fontWeight: 700,
@@ -598,6 +632,11 @@ export default function CardFile({
           // اینجا به API وصل کن
           console.log("Visit request:", { ...payload, propertyId: data.id });
         }}
+      />
+      <VirtualTourModal
+        open={virtualTourModalOpen}
+        onClose={() => setVirtualTourModalOpen(false)}
+        links={data.virtualTourUrl}
       />
     </>
   );

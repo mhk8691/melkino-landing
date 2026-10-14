@@ -1,7 +1,11 @@
 export type PropertyType = {
 
     id: number
-    virtualTourUrl?:string
+    virtualTourUrl?:{
+        telegram:string
+        instagram:string
+        eitaa:string
+    }
 
     propertyType: string
 
