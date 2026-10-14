@@ -1,7 +1,7 @@
 export type PropertyType = {
 
     id: number
-
+    virtualTourUrl?:string
 
     propertyType: string
 

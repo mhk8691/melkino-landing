@@ -23,7 +23,6 @@ const SORT_OPTIONS: SortOption[] = [
   { value: "newest", label: "جدیدترین فایل‌ها" },
   { value: "cheapest", label: "ارزان‌ترین" },
   { value: "expensive", label: "گران‌ترین" },
-  { value: "popular", label: "محبوب‌ترین" },
 ];
 
 export interface FileToolbarProps {

@@ -123,9 +123,8 @@ export default function CardFile({
   const price = getPriceInfo(data);
   const personName = getPersonName(data);
 
-  // آدرس تور مجازی (در صورت وجود در تایپ، as any را حذف کن)
   const virtualTourUrl: string | undefined =
-    (data as any).virtualTourUrl || (data as any).tourUrl;
+    (data).virtualTourUrl;
 
   const handleBookmarkClick = (e: React.MouseEvent) => {
     e.stopPropagation();

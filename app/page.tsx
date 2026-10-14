@@ -50,6 +50,7 @@ export const propertyItem: PropertyType = {
   advisorName: "مهندس اخوان",
   agencyName: "املاک بزرگ زعفرانیه",
   contactPhone: "02122001122",
+  virtualTourUrl:'https://www.instagram.com/'
 };
 
 export const requestItem: PropertyType = {
