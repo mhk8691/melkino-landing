@@ -24,10 +24,18 @@ import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import TourRoundedIcon from "@mui/icons-material/TourRounded";
 import EventAvailableRoundedIcon from "@mui/icons-material/EventAvailableRounded";
 import HandshakeRoundedIcon from "@mui/icons-material/HandshakeRounded";
+import { useRouter } from "next/navigation";
 import { PropertyType } from "@/app/Core/types";
 import { getPropertyTypeIcon } from "./PropertyTypeIcon";
-import { useRouter } from "next/navigation";
 import VisitRequestModal from "./VisitRequestModal";
+import {
+  formatNumber,
+  getCoverImage,
+  getDisplayArea,
+  getFormattedLocation,
+  getPersonName,
+  getPriceInfo,
+} from "./cardFileUtils";
 
 export interface CardFileProps {
   data: PropertyType;
@@ -43,28 +51,57 @@ export interface CardFileProps {
   mode?: "request" | "file";
 }
 
-const formatNumber = (num?: number) => {
-  if (num === undefined || num === null || isNaN(num)) return "0";
-  return num.toLocaleString("fa-IR");
-};
+/* ------------------------------ Sub-components ----------------------------- */
 
-const getFormattedLocation = (data: PropertyType) => {
-  const parts: string[] = [];
-  if (data.city) parts.push(data.city);
-  if (data.district) {
-    parts.push(
-      Array.isArray(data.district) ? data.district.join("، ") : data.district,
-    );
-  }
-  if (data.neighborhood) {
-    parts.push(
-      Array.isArray(data.neighborhood)
-        ? data.neighborhood.join("، ")
-        : data.neighborhood,
-    );
-  }
-  return parts.length > 0 ? parts.join("، ") : "موقعیت مشخص نشده";
-};
+function Metric({ label, value }: { label: string; value: string }) {
+  return (
+    <Box sx={{ display: "flex", flexDirection: "column" }}>
+      <Typography variant="caption" sx={{ color: "text.muted", fontSize: 11 }}>
+        {label}
+      </Typography>
+      <Typography
+        variant="body2"
+        sx={{ fontWeight: 700, color: "text.primary" }}
+      >
+        {value}
+      </Typography>
+    </Box>
+  );
+}
+
+function InfoRow({
+  icon,
+  label,
+  value,
+  ltr = false,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  ltr?: boolean;
+}) {
+  return (
+    <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
+      {icon}
+      <Typography variant="caption" sx={{ fontSize: 11, color: "text.secondary" }}>
+        {label}
+      </Typography>
+      <Typography
+        variant="caption"
+        sx={{
+          fontSize: 11,
+          fontWeight: 700,
+          color: "text.primary",
+          ...(ltr && { direction: "ltr" }),
+        }}
+      >
+        {value}
+      </Typography>
+    </Stack>
+  );
+}
+
+/* -------------------------------- Component -------------------------------- */
 
 export default function CardFile({
   data,
@@ -81,44 +118,21 @@ export default function CardFile({
   const [visitModalOpen, setVisitModalOpen] = React.useState(false);
   const router = useRouter();
 
+  const coverImage = React.useMemo(() => getCoverImage(data), [data]);
+  const hasImages = !!data.images && data.images.length > 0;
+  const price = getPriceInfo(data);
+  const personName = getPersonName(data);
+
+  // آدرس تور مجازی (در صورت وجود در تایپ، as any را حذف کن)
+  const virtualTourUrl: string | undefined =
+    (data as any).virtualTourUrl || (data as any).tourUrl;
+
   const handleBookmarkClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     const next = !bookmarked;
     setBookmarked(next);
     onBookmarkToggle?.(next);
   };
-
-  const getDisplayArea = (): string => {
-    if (data.area) return `${formatNumber(data.area)} متر`;
-    if (data.areaFrom || data.areaTo) {
-      return `${formatNumber(data.areaFrom || 0)} تا ${formatNumber(
-        data.areaTo || 0,
-      )} متر`;
-    }
-    return "نامشخص";
-  };
-
-  const isRentType =
-    data.contractType === "رهن و اجاره" || data.contractType === "اجاره";
-  const displayPriceValue = isRentType
-    ? formatNumber(data.mortgagePrice || data.rent || data.mortgagePriceFrom)
-    : formatNumber(data.totalPrice || data.totalPriceFrom);
-
-  const personName =
-    data.assignedTo || data.advisorName || data.ownerName || "کارشناس مربوطه";
-
-  const getCoverImage = () => {
-    if (data.images && data.images.length > 0) {
-      const firstImg = data.images[0];
-      if (typeof firstImg === "string") return firstImg;
-      if (firstImg instanceof File) return URL.createObjectURL(firstImg);
-    }
-    return null;
-  };
-
-  // آدرس تور مجازی (در صورت وجود در تایپ، as any را حذف کن)
-  const virtualTourUrl: string | undefined =
-    (data as any).virtualTourUrl || (data as any).tourUrl;
 
   const handleDetails = () => {
     if (onDetailsClick) onDetailsClick(data);
@@ -136,10 +150,6 @@ export default function CardFile({
   const handleVisitRequest = () => {
     setVisitModalOpen(true);
     onVisitRequest?.(data);
-  };
-
-  const handleIHave = () => {
-    onIHave?.(data);
   };
 
   return (
@@ -169,25 +179,23 @@ export default function CardFile({
             position: "relative",
             height: 200,
             width: "100%",
-            bgcolor: "action.hover",
             overflow: "hidden",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            background:
-              data.images && data.images.length > 0
-                ? "none"
-                : (theme) =>
-                    `linear-gradient(135deg, ${alpha(
-                      theme.palette.primary.main,
-                      0.08,
-                    )} 0%, ${alpha(theme.palette.primary.main, 0.2)} 100%)`,
+            background: hasImages
+              ? "none"
+              : (theme) =>
+                  `linear-gradient(135deg, ${alpha(
+                    theme.palette.primary.main,
+                    0.08,
+                  )} 0%, ${alpha(theme.palette.primary.main, 0.2)} 100%)`,
           }}
         >
-          {data.images && data.images.length > 0 ? (
+          {hasImages ? (
             <Box
               component="img"
-              src={getCoverImage() ?? "/images/placeholder.jpg"}
+              src={coverImage ?? "/images/placeholder.jpg"}
               alt={data.propertyType || "ملک"}
               sx={{
                 width: "100%",
@@ -198,13 +206,11 @@ export default function CardFile({
               }}
             />
           ) : (
-            <Box
+            <Stack
+              spacing={1}
               sx={{
-                display: "flex",
-                flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                gap: 1,
                 color: "primary.main",
                 p: 2,
                 textAlign: "center",
@@ -219,7 +225,7 @@ export default function CardFile({
               >
                 {data.propertyType || "درخواست ملک"}
               </Typography>
-            </Box>
+            </Stack>
           )}
 
           <Stack
@@ -276,7 +282,7 @@ export default function CardFile({
             )}
           </IconButton>
 
-          {data.images && data.images.length > 0 && (
+          {hasImages && (
             <Stack
               direction="row"
               sx={{
@@ -294,11 +300,8 @@ export default function CardFile({
               }}
             >
               <PhotoCameraRoundedIcon sx={{ fontSize: 13 }} />
-              <Typography
-                variant="caption"
-                sx={{ fontSize: 11, fontWeight: 600 }}
-              >
-                {formatNumber(data.images.length)}
+              <Typography variant="caption" sx={{ fontSize: 11, fontWeight: 600 }}>
+                {formatNumber(data.images!.length)}
               </Typography>
             </Stack>
           )}
@@ -314,21 +317,14 @@ export default function CardFile({
             flex: 1,
           }}
         >
-          <Box
-            sx={{
-              flexDirection: "column",
-              alignItems: "flex-start",
-              display: "flex",
-            }}
-          >
+          {/* موقعیت و عنوان */}
+          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
             <Stack
               direction="row"
               spacing={0.5}
               sx={{ color: "text.muted", mb: 0.5, alignItems: "center" }}
             >
-              <LocationOnRoundedIcon
-                sx={{ fontSize: 18, color: "primary.main" }}
-              />
+              <LocationOnRoundedIcon sx={{ fontSize: 18, color: "primary.main" }} />
               <Typography variant="caption" sx={{ fontSize: 12 }}>
                 {getFormattedLocation(data)}
               </Typography>
@@ -362,54 +358,17 @@ export default function CardFile({
               textAlign: "center",
             }}
           >
-            <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <Typography
-                variant="caption"
-                sx={{ color: "text.muted", fontSize: 11 }}
-              >
-                متراژ
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{ fontWeight: 700, color: "text.primary" }}
-              >
-                {getDisplayArea()}
-              </Typography>
-            </Box>
-
-            <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <Typography
-                variant="caption"
-                sx={{ color: "text.muted", fontSize: 11 }}
-              >
-                اتاق
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{ fontWeight: 700, color: "text.primary" }}
-              >
-                {data.roomCount
-                  ? `${formatNumber(data.roomCount)} خواب`
-                  : "نامشخص"}
-              </Typography>
-            </Box>
-
-            <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <Typography
-                variant="caption"
-                sx={{ color: "text.muted", fontSize: 11 }}
-              >
-                طبقه
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{ fontWeight: 700, color: "text.primary" }}
-              >
-                {data.totalFloor
-                  ? `${formatNumber(data.totalFloor)}`
-                  : "نامشخص"}
-              </Typography>
-            </Box>
+            <Metric label="متراژ" value={getDisplayArea(data)} />
+            <Metric
+              label="اتاق"
+              value={
+                data.roomCount ? `${formatNumber(data.roomCount)} خواب` : "نامشخص"
+              }
+            />
+            <Metric
+              label="طبقه"
+              value={data.totalFloor ? formatNumber(data.totalFloor) : "نامشخص"}
+            />
           </Box>
 
           {/* قیمت */}
@@ -423,26 +382,19 @@ export default function CardFile({
               alignItems: "flex-start",
             }}
           >
-            <Typography
-              variant="caption"
-              sx={{ color: "text.muted", fontSize: 12 }}
-            >
-              {isRentType ? "قیمت رهن / ودیعه:" : "قیمت کل:"}
+            <Typography variant="caption" sx={{ color: "text.muted", fontSize: 12 }}>
+              {price.label}
             </Typography>
             <Stack
+              direction="row"
               sx={{
-                display: "flex",
-                flexDirection: "row",
                 alignItems: "baseline",
-                width: "100%",
                 justifyContent: "space-between",
+                width: "100%",
               }}
             >
-              <Typography
-                variant="h6"
-                sx={{ fontWeight: 800, color: "primary.main" }}
-              >
-                {displayPriceValue}
+              <Typography variant="h6" sx={{ fontWeight: 800, color: "primary.main" }}>
+                {price.value}
               </Typography>
               <Typography
                 variant="caption"
@@ -455,91 +407,46 @@ export default function CardFile({
 
           {/* اطلاعات متقاضی (درخواست) */}
           {(data.requesterName || data.requesterPhone) && (
-            <Box
+            <Stack
+              spacing={0.5}
               sx={{
                 p: 1,
                 borderRadius: "8px",
                 bgcolor: alpha("#1976d2", 0.05),
-                display: "flex",
-                flexDirection: "column",
-                gap: 0.5,
               }}
             >
               {data.requesterName && (
-                <Stack
-                  sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 0.5,
-                  }}
-                >
-                  <PersonOutlineRoundedIcon
-                    sx={{ fontSize: 15, color: "primary.main" }}
-                  />
-                  <Typography
-                    variant="caption"
-                    sx={{ fontSize: 11, color: "text.secondary" }}
-                  >
-                    متقاضی:
-                  </Typography>
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      fontSize: 11,
-                      fontWeight: 700,
-                      color: "text.primary",
-                    }}
-                  >
-                    {data.requesterName}
-                  </Typography>
-                </Stack>
+                <InfoRow
+                  icon={
+                    <PersonOutlineRoundedIcon
+                      sx={{ fontSize: 15, color: "primary.main" }}
+                    />
+                  }
+                  label="متقاضی:"
+                  value={data.requesterName}
+                />
               )}
               {data.requesterPhone && (
-                <Stack
-                  sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 0.5,
-                  }}
-                >
-                  <PhoneInTalkRoundedIcon
-                    sx={{ fontSize: 15, color: "primary.main" }}
-                  />
-                  <Typography
-                    variant="caption"
-                    sx={{ fontSize: 11, color: "text.secondary" }}
-                  >
-                    تماس:
-                  </Typography>
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      fontSize: 11,
-                      fontWeight: 700,
-                      color: "text.primary",
-                      direction: "ltr",
-                    }}
-                  >
-                    {data.requesterPhone}
-                  </Typography>
-                </Stack>
+                <InfoRow
+                  icon={
+                    <PhoneInTalkRoundedIcon
+                      sx={{ fontSize: 15, color: "primary.main" }}
+                    />
+                  }
+                  label="تماس:"
+                  value={data.requesterPhone}
+                  ltr
+                />
               )}
-            </Box>
+            </Stack>
           )}
 
-          {/* خط جداکننده */}
           <Divider sx={{ borderColor: "background.border", my: 0.5 }} />
 
           {/* نام مشاور / تایید */}
           <Stack
             direction="row"
-            sx={{
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: 1,
-            }}
+            sx={{ alignItems: "center", justifyContent: "space-between", gap: 1 }}
           >
             <Stack direction="row" spacing={0.75} sx={{ alignItems: "center" }}>
               {isVerified ? (
@@ -586,9 +493,8 @@ export default function CardFile({
             )}
           </Stack>
 
-          {/* ناحیه دکمه‌ها */}
+          {/* دکمه‌ها */}
           <Stack spacing={1} sx={{ mt: 0.5 }}>
-            {/* دکمه اصلی: مشاهده جزئیات */}
             <Button
               fullWidth
               onClick={handleDetails}
@@ -610,7 +516,6 @@ export default function CardFile({
               مشاهده جزئیات
             </Button>
 
-            {/* دکمه‌های ثانویه بر اساس mode */}
             <Stack direction="row" spacing={1}>
               {mode === "file" ? (
                 <>
@@ -639,9 +544,7 @@ export default function CardFile({
                     onClick={handleVisitRequest}
                     variant="outlined"
                     color="success"
-                    startIcon={
-                      <EventAvailableRoundedIcon sx={{ fontSize: 16 }} />
-                    }
+                    startIcon={<EventAvailableRoundedIcon sx={{ fontSize: 16 }} />}
                     sx={{
                       borderRadius: "10px",
                       fontWeight: 700,
@@ -661,7 +564,7 @@ export default function CardFile({
               ) : (
                 <Button
                   fullWidth
-                  onClick={handleIHave}
+                  onClick={() => onIHave?.(data)}
                   variant="outlined"
                   color="secondary"
                   startIcon={<HandshakeRoundedIcon sx={{ fontSize: 16 }} />}
@@ -695,11 +598,6 @@ export default function CardFile({
         onSubmit={async (payload) => {
           // اینجا به API وصل کن
           console.log("Visit request:", { ...payload, propertyId: data.id });
-          // await fetch("/api/visit-requests", {
-          //   method: "POST",
-          //   headers: { "Content-Type": "application/json" },
-          //   body: JSON.stringify({ ...payload, propertyId: data.id }),
-          // });
         }}
       />
     </>
