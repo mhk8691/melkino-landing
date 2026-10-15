@@ -21,9 +21,10 @@ export type NavItem = {
 
 export const NAV_ITEMS: NavItem[] = [
   { key: 'home', label: 'خانه', href: '/', icon: HomeIcon, activeIcon: FolderIcon, group: 'main' },
-  { key: 'submit', label: 'ثبت', href: '/vip', icon: AddIcon, activeIcon: StarRoundedIcon, group: 'main' },
+  { key: 'saved', label: 'نشان ها', href: '/saved', icon: BookmarkBorderRoundedIcon, activeIcon: BookmarkRoundedIcon, group: 'account' },
+
   { key: 'support', label: 'چت و تماس', href: 'https://panel.mlkino.com/support', icon: SupportAgentIcon, activeIcon: RequestQuoteIcon, group: 'main' },
-  { key: 'saved', label: 'ذخیره‌شده‌ها', href: '/saved', icon: BookmarkBorderRoundedIcon, activeIcon: BookmarkRoundedIcon, group: 'account' },
+  { key: 'submit', label: 'ثبت', href: '/vip', icon: AddIcon, activeIcon: StarRoundedIcon, group: 'main' },
   { key: 'profile', label: 'ملکینوی من', href: '/panel', icon: PersonOutlineOutlinedIcon, activeIcon: PersonIcon, group: 'account' },
 ];
 
