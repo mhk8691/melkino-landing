@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Grid from "@mui/material/Grid";
+import { Grid, Stack } from "@mui/material";
 import CardFile from "./CardFile";
 import CardFileHorizontal from "./CardFileHorizontal";
 import { propertyItem } from "@/app/page";
@@ -65,7 +65,7 @@ export default function PropertiesPage() {
   const isList = view === "list";
 
   return (
-    <>
+    <Stack sx={{ mt: 2 }}>
       <StatsFilterBar items={ITEMS} value={tab} onChange={setTab} />
 
       <Grid container spacing={2}>
@@ -94,11 +94,7 @@ export default function PropertiesPage() {
           {items.map((item) => (
             <Grid
               key={item}
-              size={
-                isList
-                  ? { xs: 12 }
-                  : { xs: 12, sm: 6, lg: 4, xl: 3 }
-              }
+              size={isList ? { xs: 12 } : { xs: 12, sm: 6, lg: 4, xl: 3 }}
               sx={{
                 display: "flex",
                 justifyContent: isList ? "stretch" : "center",
@@ -113,6 +109,6 @@ export default function PropertiesPage() {
           ))}
         </Grid>
       </Grid>
-    </>
+    </Stack>
   );
 }

@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import {
   Modal,
@@ -25,7 +27,7 @@ interface VirtualTourModalProps {
   links?: VirtualTourLinks;
 }
 
-// آیکون اختصاصی ایتا با استفاده از SVG ارائه‌شده
+// آیکون اختصاصی ایتا
 const EitaaIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     width="24"
@@ -40,6 +42,7 @@ const EitaaIcon = (props: React.SVGProps<SVGSVGElement>) => (
     />
   </svg>
 );
+
 const platforms = [
   {
     key: 'eitaa',
@@ -47,7 +50,7 @@ const platforms = [
     description: 'مشاهده تور در ایتا',
     icon: <EitaaIcon />,
     color: '#E37600',
-    background: '#FFF4E5', // یک پس‌زمینه روشن هم‌خانواده با نارنجی
+    background: '#FFF4E5',
   },
   {
     key: 'telegram',
@@ -66,7 +69,8 @@ const platforms = [
     background: '#FCECF3',
   },
 ] as const;
-function normalizeUrl(url: string) {
+
+function normalizeUrl(url: string): string {
   const trimmedUrl = url.trim();
 
   if (/^https?:\/\//i.test(trimmedUrl)) {
@@ -102,13 +106,15 @@ export default function VirtualTourModal({
           left: '50%',
           transform: 'translate(-50%, -50%)',
           width: { xs: 'calc(100% - 32px)', sm: 420 },
-          overflow: 'hidden',
+          maxHeight: 'calc(100dvh - 32px)',
+          overflowY: 'auto',
           bgcolor: 'background.paper',
           borderRadius: 4,
           outline: 'none',
           boxShadow: '0 24px 80px rgba(15, 23, 42, 0.22)',
         }}
       >
+        {/* سربرگ */}
         <Box
           sx={{
             position: 'relative',
@@ -117,7 +123,8 @@ export default function VirtualTourModal({
             pb: 3,
             color: '#fff',
             textAlign: 'left',
-            background: 'linear-gradient(135deg, #1E293B 0%, #334155 100%)',
+            background:
+              'linear-gradient(135deg, #1E293B 0%, #334155 100%)',
           }}
         >
           <IconButton
@@ -138,25 +145,30 @@ export default function VirtualTourModal({
           </IconButton>
 
           <Typography
+            component="h2"
             id="virtual-tour-modal-title"
             variant="h5"
-            fontWeight={800}
             sx={{
               mt: 3,
+              fontWeight: 800,
             }}
           >
             مشاهده ملک
           </Typography>
 
           <Typography
+            component="p"
             id="virtual-tour-modal-description"
             variant="body2"
-            sx={{ color: 'rgba(255,255,255,0.72)' }}
+            sx={{
+              color: 'rgba(255,255,255,0.72)',
+            }}
           >
             برای دیدن تور مجازی، یکی از پلتفرم‌ها را انتخاب کنید.
           </Typography>
         </Box>
 
+        {/* فهرست پلتفرم‌ها */}
         <Stack spacing={1.25} sx={{ p: 2.5 }}>
           {platforms.map((platform) => {
             const url = links?.[platform.key];
@@ -175,7 +187,9 @@ export default function VirtualTourModal({
                   px: 1.5,
                   py: 1.25,
                   border: '1px solid',
-                  borderColor: isDisabled ? 'divider' : `${platform.color}30`,
+                  borderColor: isDisabled
+                    ? 'divider'
+                    : `${platform.color}30`,
                   borderRadius: 3,
                   color: 'text.primary',
                   textAlign: 'left',
@@ -200,28 +214,53 @@ export default function VirtualTourModal({
                     borderRadius: 2.5,
                     color: platform.color,
                     bgcolor: platform.background,
-                    '& svg': { fontSize: 24 },
+                    '& svg': {
+                      fontSize: 24,
+                    },
                   }}
                 >
                   {platform.icon}
                 </Box>
 
-                <Box sx={{ flex: 1, minWidth: 0 }}>
-                  <Typography fontWeight={700} fontSize={14}>
+                <Box
+                  sx={{
+                    flex: 1,
+                    minWidth: 0,
+                  }}
+                >
+                  <Typography
+                    component="span"
+                    sx={{
+                      display: 'block',
+                      fontWeight: 700,
+                      fontSize: 14,
+                    }}
+                  >
                     {platform.title}
                   </Typography>
+
                   <Typography
+                    component="span"
                     variant="caption"
                     color="text.secondary"
-                    sx={{ display: 'block', mt: 0.25 }}
+                    sx={{
+                      display: 'block',
+                      mt: 0.25,
+                    }}
                   >
-                    {isDisabled ? 'لینکی ثبت نشده است' : platform.description}
+                    {isDisabled
+                      ? 'لینکی ثبت نشده است'
+                      : platform.description}
                   </Typography>
                 </Box>
 
                 {!isDisabled && (
                   <ArrowBackRoundedIcon
-                    sx={{ color: 'text.disabled', fontSize: 20 }}
+                    sx={{
+                      color: 'text.disabled',
+                      fontSize: 20,
+                      flexShrink: 0,
+                    }}
                   />
                 )}
               </Button>

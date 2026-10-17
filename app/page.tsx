@@ -170,10 +170,10 @@ export default function Home() {
           mb:5
         }}
       >
-        <HeroSlider />
-        <ActionCards />
+        {/* <HeroSlider /> */}
+        {/* <ActionCards /> */}
         
-        <PropertiesPage/>
+        <PropertiesPage />
       </Container>
     </>
   );
