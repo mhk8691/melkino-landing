@@ -165,7 +165,7 @@ export default function Home() {
             sm:4
           },
           width: "100%",
-          maxWidth: "1440px",
+          maxWidth: "var(--page-max-width)",
           display: "flex",
           flexDirection: "column",
           gap: 3,

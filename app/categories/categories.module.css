@@ -1,8 +1,8 @@
 .page {
   width: 100%;
-  max-width: 1440px;
+  max-width: var(--page-max-width);
   margin-inline: auto;
-  padding: 8px 32px calc(120px + env(safe-area-inset-bottom));
+  padding: 8px 32px 56px;
   color: #152345;
 }
 .breadcrumb { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; color: #78849e; font-size: 14px; }

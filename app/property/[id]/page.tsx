@@ -82,13 +82,14 @@ const requestData: RequestPropertyData = {
 export default function page() {
   return (
     <Container
-      maxWidth={"xl"}
+      maxWidth={false}
       sx={{
         px: {
           xs: 2,
           sm: 4,
         },
-        minWidth: "100% !important",
+        width: "100%",
+        maxWidth: "var(--page-max-width)",
         display: "flex",
         flexDirection: "column",
         gap: 3,

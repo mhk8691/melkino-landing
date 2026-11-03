@@ -37,7 +37,7 @@ export default function RootLayout({
             >
               <Navbar />
 
-              <Box component="main" sx={{ flexGrow: 1 }}>
+              <Box component="main" sx={{ flexGrow: 1, pb: { xs: "calc(104px + env(safe-area-inset-bottom))", lg: 0 } }}>
                 {children}
               </Box>
 

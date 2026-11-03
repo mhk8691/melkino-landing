@@ -1,5 +1,5 @@
 .home {
-  padding-bottom: calc(110px + env(safe-area-inset-bottom));
+  padding-bottom: 40px;
   min-width: 0;
 }
 

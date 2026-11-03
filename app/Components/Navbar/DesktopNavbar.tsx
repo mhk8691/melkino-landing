@@ -4,37 +4,77 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { AppBar, Box, Button, IconButton, Avatar, Menu, MenuItem } from "@mui/material";
+import { Drawer, IconButton } from "@mui/material";
 import LocationOnOutlined from "@mui/icons-material/LocationOnOutlined";
 import KeyboardArrowDown from "@mui/icons-material/KeyboardArrowDown";
 import MenuRounded from "@mui/icons-material/MenuRounded";
+import CloseRounded from "@mui/icons-material/CloseRounded";
 import BookmarkBorderRounded from "@mui/icons-material/BookmarkBorderRounded";
-import { NAV_ITEMS, isNavActive } from "./nav-items";
-import LocationPickerModal from "../ChooseCity/LocationPickerModal";
+import PersonOutlineRounded from "@mui/icons-material/PersonOutlineRounded";
+import AddRounded from "@mui/icons-material/AddRounded";
+import { isNavActive } from "./nav-items";
+import LocationPickerModal, { type LocationValue } from "../ChooseCity/LocationPickerModal";
+import AdvancedFilterPanel from "../Filter/AdvancedFilterPanel";
 import SearchBox from "./SearchBox";
+import SubmitMenu from "./SubmitMenu";
+import styles from "./navbar.module.css";
+
+const links = [
+  { href: "/", label: "خانه" },
+  { href: "/files", label: "فایل‌های ملکی" },
+  { href: "/vip", label: "فایل‌های ویژه" },
+  { href: "/requests", label: "درخواست‌های ملکی" },
+  { href: "/categories", label: "دسته‌بندی‌ها" },
+];
 
 export default function DesktopNavbar() {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
-  const [anchor, setAnchor] = useState<HTMLElement | null>(null);
+  const [locationOpen, setLocationOpen] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [location, setLocation] = useState<LocationValue>({ allIran: false, cities: ["tehran"], provinces: [] });
+  const cityNames: Record<string, string> = { tehran: "تهران", karaj: "کرج", mashhad: "مشهد", shiraz: "شیراز", isfahan: "اصفهان", tabriz: "تبریز", kish: "کیش", qeshm: "قشم" };
+  const locationCount = location.cities.length + location.provinces.length;
+  const cityLabel = location.allIran ? "سراسر ایران" : locationCount === 0 ? "انتخاب شهر" : locationCount === 1 ? cityNames[location.cities[0]] ?? "منطقه منتخب" : `${locationCount.toLocaleString("fa-IR")} منطقه`;
+
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [submitAnchor, setSubmitAnchor] = useState<HTMLElement | null>(null);
   const handleSearch = (query: string) => { console.log("search:", query); };
+
   return <>
-    <AppBar position="static" elevation={0} color="inherit" sx={{bgcolor: 'transparent', pt: {xs: 2.5, md: 3}, pb: 2.5}}>
-      <Box sx={{width:'100%', maxWidth:1440, mx:'auto', px:{xs:2,sm:4}, display:'grid', gridTemplateColumns:{xs:'minmax(0, 1fr) auto minmax(0, 1fr)', md:'auto minmax(250px, 1fr) auto'}, alignItems:'center', gap:{xs:0.5, sm:2, md:3}}}>
-        <Box sx={{display:'flex', alignItems:'center',gap:{xs:0,sm:1}, minWidth:0, gridColumn:1,gridRow:1}}>
-          <IconButton aria-label="منوی اصلی" onClick={e=>setAnchor(e.currentTarget)} sx={{color:'#15234b'}}><MenuRounded sx={{fontSize:29}} /></IconButton>
-          <Button onClick={()=>setOpen(true)} startIcon={<LocationOnOutlined />} endIcon={<KeyboardArrowDown />} sx={{color:'text.primary',bgcolor:'#eef2fb',borderRadius:10,px:{xs:1,sm:2},minWidth:0, fontSize:{xs:12,sm:14}, '& .MuiButton-startIcon':{marginInlineEnd:0.25}, '& .MuiButton-endIcon':{display:{xs:'none',sm:'inherit'}}}}>تهران</Button>
-          <Box component={Link} href="/" sx={{display:{xs:'none',md:'block'},position:'relative',width:58,height:58,mr:1}}><Image src="/images/melkino.png" alt="ملکینو" fill priority sizes="58px" style={{objectFit:'contain'}} /></Box>
-        </Box>
-        <Box component={Link} href="/" aria-label="ملکینو، صفحه اصلی" sx={{display:{xs:'block',md:'none'},gridColumn:2,gridRow:1,position:'relative',width:{xs:46,sm:66},height:{xs:46,sm:66}}}><Image src="/images/melkino.png" alt="ملکینو" fill priority sizes="66px" style={{objectFit:'contain'}} /></Box>
-        <Box sx={{gridColumn:{xs:'1 / -1',md:2},gridRow:{xs:2,md:1},width:'100%',minWidth:0,'& > div':{maxWidth:'none'},'& form':{height:{xs:49,sm:58},borderRadius:'14px',borderColor:'#e0e5f0',bgcolor:'rgba(255,255,255,.85)'}}}><SearchBox onSearch={handleSearch} /></Box>
-        <Box sx={{gridColumn:3,gridRow:1,display:'flex',justifyContent:'flex-end',alignItems:'center',gap:{xs:0.5,sm:2}}}>
-          <IconButton component={Link} href="/saved" aria-label="نشان‌ها" sx={{bgcolor:'#fff',borderRadius:'14px',color:isNavActive(pathname,'/saved')?'primary.main':'#65708c'}}><BookmarkBorderRounded /></IconButton>
-          <Link href={NAV_ITEMS.find(item=>item.key==='profile')!.href} aria-label="ملکینوی من"><Avatar src="/images/profile.png" sx={{width:{xs:36,sm:48},height:{xs:36,sm:48}}} /></Link>
-        </Box>
-      </Box>
-    </AppBar>
-    <Menu anchorEl={anchor} open={Boolean(anchor)} onClose={()=>setAnchor(null)}>{NAV_ITEMS.map(item=><MenuItem key={item.key} component={Link} href={item.key==='submit'?'https://panel.mlkino.com/files/create':item.href} onClick={()=>setAnchor(null)} selected={isNavActive(pathname,item.href)}>{item.label}</MenuItem>)}</Menu>
-    <LocationPickerModal open={open} onClose={()=>setOpen(false)} />
+    <header className={styles.header}>
+      <div className={styles.shell}>
+        <div className={styles.topRow}>
+          <IconButton className={styles.menuButton} aria-label="باز کردن منوی اصلی" aria-expanded={drawerOpen} aria-controls={drawerOpen ? "main-navigation-drawer" : undefined} onClick={() => setDrawerOpen(true)}><MenuRounded /></IconButton>
+          <Link href="/" className={styles.brand} aria-label="ملکینو، صفحه اصلی">
+            <Image src="/images/melkino.png" alt="" width={48} height={48} priority />
+            <span><strong>ملکینو</strong><small>همراه شما تا خانه</small></span>
+          </Link>
+          <div className={styles.searchRow}>
+            <button type="button" className={styles.city} aria-label="انتخاب شهر" onClick={() => setLocationOpen(true)}><LocationOnOutlined /><span>{cityLabel}</span><KeyboardArrowDown /></button>
+            <div className={styles.search}><SearchBox onSearch={handleSearch} onFilterClick={() => setFilterOpen(true)} /></div>
+          </div>
+          <div className={styles.actions}>
+            <Link href="/saved" className={styles.iconLink} aria-label="نشان‌ها" aria-current={isNavActive(pathname, "/saved") ? "page" : undefined}><BookmarkBorderRounded /></Link>
+            <Link href="/panel" className={styles.account} aria-label="ملکینوی من"><PersonOutlineRounded /><span>ملکینوی من</span></Link>
+            <button type="button" className={styles.submitDesktop} onClick={event => setSubmitAnchor(event.currentTarget)} aria-haspopup="menu" aria-expanded={Boolean(submitAnchor)} aria-controls={submitAnchor ? "header-submit-menu" : undefined}><AddRounded /> ثبت آگهی</button>
+          </div>
+        </div>
+        <nav className={styles.desktopLinks} aria-label="منوی اصلی سایت">
+          {links.map(({ href, label }) => <Link key={href} href={href} aria-current={isNavActive(pathname, href) ? "page" : undefined}>{label}</Link>)}
+          <Link className={styles.support} href="https://panel.mlkino.com/support">چت و تماس</Link>
+        </nav>
+      </div>
+    </header>
+    <Drawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)} slotProps={{ paper: { sx: { width: 320, maxWidth: "calc(100vw - 32px)" } } }}>
+      <div id="main-navigation-drawer" className={styles.drawer}>
+        <div className={styles.drawerTitle}><strong>منوی ملکینو</strong><IconButton aria-label="بستن منو" onClick={() => setDrawerOpen(false)}><CloseRounded /></IconButton></div>
+        <nav aria-label="منوی اصلی موبایل">{[...links, { href: "/saved", label: "نشان‌ها" }, { href: "https://panel.mlkino.com/support", label: "چت و تماس" }, { href: "/panel", label: "ملکینوی من" }].map(({ href, label }) => <Link key={href} href={href} onClick={() => setDrawerOpen(false)} aria-current={isNavActive(pathname, href) ? "page" : undefined}>{label}</Link>)}</nav>
+      </div>
+    </Drawer>
+    <SubmitMenu id="header-submit-menu" anchorEl={submitAnchor} onClose={() => setSubmitAnchor(null)} />
+    <Drawer anchor="bottom" open={filterOpen} onClose={() => setFilterOpen(false)} slotProps={{ paper: { sx: { maxHeight: "90dvh", borderRadius: "24px 24px 0 0", pb: "env(safe-area-inset-bottom)" } } }}>
+      <div className={styles.filterPanel}><AdvancedFilterPanel embedded onClose={() => setFilterOpen(false)} onApply={() => setFilterOpen(false)} /></div>
+    </Drawer>
+    <LocationPickerModal open={locationOpen} value={location} onApply={setLocation} onClose={() => setLocationOpen(false)} />
   </>;
 }
