@@ -32,7 +32,7 @@ export function HomeOverview() {
 
 export function HomeCategories() {
   return <Box className="home-categories">
-    <Box className="home-section-heading"><Typography component="h2"><ApartmentOutlined color="primary" /> دسته‌بندی‌ها</Typography><Link href="/files">مشاهده همه <ArrowBackRounded /></Link></Box>
+    <Box className="home-section-heading"><Typography component="h2"><ApartmentOutlined color="primary" /> دسته‌بندی‌ها</Typography><Link href="/categories" aria-label="مشاهده همه دسته‌بندی‌ها">مشاهده همه <ArrowBackRounded /></Link></Box>
     <Box className="home-category-list">{[{Icon: ApartmentOutlined, label: 'آپارتمان'}, {Icon: CottageOutlined, label: 'ویلا'}, {Icon: LandscapeOutlined, label: 'زمین'}, {Icon: BusinessOutlined, label: 'اداری'}, {Icon: StorefrontOutlined, label: 'تجاری'}].map(({Icon,label}) => <Button component={Link} href="/files" key={label}><Icon /><span>{label}</span></Button>)}</Box>
   </Box>;
 }
