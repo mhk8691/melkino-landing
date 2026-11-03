@@ -1,9 +1,9 @@
 "use client";
 
 import { Container } from "@mui/material";
-import ActionCards from "./Components/ActionCards/ActionCards";
+import { HomeOverview, HomeCategories } from "./Components/HomeOverview";
+import styles from "./home.module.css";
 import { PropertyType } from "./Core/types";
-import HeroSlider from "./Components/HeroSlider/HeroSlider";
 import PropertiesPage from "./Components/Card/PropertiesPage";
 
 export const propertyItem: PropertyType = {
@@ -157,23 +157,25 @@ export default function Home() {
   return (
     <>
       <Container
-        maxWidth={"xl"}
+        className={styles.home}
+        maxWidth={false}
         sx={{
           px: {
             xs:2,
             sm:4
           },
-          minWidth: "100% !important",
+          width: "100%",
+          maxWidth: "1440px",
           display: "flex",
           flexDirection: "column",
           gap: 3,
           mb:5
         }}
       >
-        {/* <HeroSlider /> */}
-        {/* <ActionCards /> */}
+        <HomeOverview />
         
         <PropertiesPage />
+        <HomeCategories />
       </Container>
     </>
   );

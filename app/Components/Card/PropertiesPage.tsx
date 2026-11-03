@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Grid, Stack } from "@mui/material";
+import Link from "next/link";
+import ArrowBackRounded from "@mui/icons-material/ArrowBackRounded";
+import BoltRounded from "@mui/icons-material/BoltRounded";
+import { Box, Typography, Grid, Stack } from "@mui/material";
 import CardFile from "./CardFile";
 import CardFileHorizontal from "./CardFileHorizontal";
 import { propertyItem } from "@/app/page";
@@ -65,18 +68,18 @@ export default function PropertiesPage() {
   const isList = view === "list";
 
   return (
-    <Stack sx={{ mt: 2 }}>
+    <Stack className="home-properties" sx={{ gap: 2.5 }}>
       <StatsFilterBar items={ITEMS} value={tab} onChange={setTab} />
 
-      <Grid container spacing={2}>
-        <ResponsiveFilter />
+      <Grid container spacing={2.5}>
+        <ResponsiveFilter desktopFrom="lg" />
 
         {/* کارت‌ها */}
         <Grid
           container
-          size={{ xs: 12, md: 8, lg: 9 }}
+          size={{ xs: 12, lg: 8, xl: 9 }}
           rowSpacing={2}
-          columnSpacing={1}
+          columnSpacing={2}
           sx={{ alignContent: "flex-start" }}
         >
           <Grid size={12}>
@@ -89,12 +92,14 @@ export default function PropertiesPage() {
               viewValue={view}
               onViewChange={handleViewChange}
             />
+            <Box className="home-section-heading" sx={{mt: 2.5}}><Typography component="h2"><BoltRounded sx={{color: "#ff9c19"}} /> جدیدترین فایل‌ها</Typography><Link href="/files">مشاهده همه <ArrowBackRounded /></Link></Box>
           </Grid>
 
+          <Grid size={12}>
+          <Box className={isList ? "home-list" : "home-grid"}>
           {items.map((item) => (
-            <Grid
+            <Box
               key={item}
-              size={isList ? { xs: 12 } : { xs: 12, sm: 6, lg: 4, xl: 3 }}
               sx={{
                 display: "flex",
                 justifyContent: isList ? "stretch" : "center",
@@ -105,8 +110,10 @@ export default function PropertiesPage() {
               ) : (
                 <CardFile data={propertyItem} />
               )}
-            </Grid>
+            </Box>
           ))}
+          </Box>
+          </Grid>
         </Grid>
       </Grid>
     </Stack>

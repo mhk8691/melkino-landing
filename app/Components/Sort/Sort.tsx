@@ -79,6 +79,7 @@ export default function FileToolbar({
 
   return (
     <Box
+      className="file-toolbar"
       dir="rtl"
       sx={{
         width: "100%",
@@ -96,10 +97,13 @@ export default function FileToolbar({
         bgcolor: "background.paper",
       }}
     >
+      <Box component="select" aria-label="مرتب‌سازی فایل‌ها" value={sort} onChange={(event) => handleSortChange(event.target.value as SortValue)} sx={{ display: {xs: 'block', md: 'none'}, fontFamily: 'inherit', color: 'text.primary', bgcolor: '#fff', border: '1px solid #e2e7f0', borderRadius: '10px', p: 1.2, minWidth: 0, fontSize: 12 }}>
+        {SORT_OPTIONS.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
+      </Box>
       {/* Right side (RTL start): sort */}
       <Stack
         sx={{
-          display: "flex",
+          display: { xs: "none", md: "flex" },
           flexDirection: "row",
           alignItems: "center",
           flexWrap: "wrap",
@@ -164,7 +168,7 @@ export default function FileToolbar({
       >
         <Typography
           variant="body2"
-          sx={{ color: "text.secondary", whiteSpace: "nowrap" }}
+          sx={{ color: "text.secondary", whiteSpace: "nowrap", display: {xs: "none", lg: "block"} }}
         >
           نمایش{" "}
           <Box component="b" sx={{ color: "text.primary", fontWeight: 700 }}>
@@ -195,8 +199,8 @@ export default function FileToolbar({
             "& .MuiToggleButtonGroup-grouped": {
               border: "1px solid transparent",
               borderRadius: "8px !important",
-              width: 36,
-              height: 36,
+              width: 44,
+              height: 44,
               color: "text.disabled",
               "&:not(:first-of-type)": { marginLeft: 0 },
               "&.Mui-selected": {

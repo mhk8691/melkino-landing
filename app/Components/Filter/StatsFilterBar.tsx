@@ -106,13 +106,13 @@ export default function StatsFilterBar<T extends string = string>({
         role="tablist"
         aria-label={ariaLabel}
         sx={{
-          backgroundColor: "#f3f5f9",
+          backgroundColor: "transparent",
           borderRadius: "14px",
           p: 0.5,
           display: "flex",
           gap: 0.5,
           minWidth: 0,
-          width: { xs: "100%", lg: "auto" },
+          width: "100%",
           maxWidth: "100%",
           boxSizing: "border-box",
           overflowX: "auto",
@@ -142,7 +142,7 @@ export default function StatsFilterBar<T extends string = string>({
               onClick={() => select(item.key)}
               onKeyDown={(e) => onKeyDown(e, index)}
               sx={{
-                flex: { xs: "0 0 auto", md: "1 1 auto" },
+                flex: "1 1 0",
                 scrollSnapAlign: "center",
                 display: "flex",
                 alignItems: "center",
@@ -155,14 +155,14 @@ export default function StatsFilterBar<T extends string = string>({
                 whiteSpace: "nowrap",
                 fontSize: { xs: "0.78rem", md: "0.875rem" },
                 fontWeight: isActive ? 800 : 600,
-                color: isActive ? ACTIVE_TEXT : IDLE_TEXT,
-                backgroundColor: isActive ? "#fff" : "transparent",
+                color: isActive ? "#fff" : IDLE_TEXT,
+                backgroundColor: isActive ? "#1667ff" : "transparent",
                 boxShadow: isActive ? "0 2px 8px rgba(20, 30, 60, 0.1)" : "none",
                 WebkitTapHighlightColor: "transparent",
                 transition:
                   "background-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease",
                 "&:hover": {
-                  backgroundColor: isActive ? "#fff" : "rgba(255,255,255,0.6)",
+                  backgroundColor: isActive ? "#125be5" : "rgba(22,103,255,0.05)",
                 },
                 "&:focus-visible": {
                   outline: `2px solid ${ACTIVE_TEXT}`,
@@ -175,7 +175,7 @@ export default function StatsFilterBar<T extends string = string>({
                   sx={{
                     flexShrink: 0,
                     fontSize: { xs: 18, md: 20 },
-                    color: isActive ? color : "#8b93a1",
+                    color: isActive ? "#fff" : "#8b93a1",
                   }}
                 />
               )}

@@ -29,10 +29,11 @@ export const cacheRtlOptions = {
 
 export const theme = createTheme({
   direction: 'rtl',
+  typography: { fontFamily: 'var(--font-vazirmatn), Arial, sans-serif' },
 
   palette: {
     primary: {
-      main: '#1E61CD',
+      main: '#1667ff',
       light: '#4B83DC',
       dark: '#144493',
     },
@@ -44,15 +45,15 @@ export const theme = createTheme({
     },
 
     background: {
-      default: '#FAF8FF',
+      default: '#f7f9fe',
       paper: '#FFFFFF',
       border: '#D4D4D2',
       
     },
 
     text: {
-      primary: '#1C1C1A',
-      secondary: '#393936',
+      primary: '#111b40',
+      secondary: '#8490ac',
       title: '#10100F',
       subtitle: '#757571',
       muted: '#575753',

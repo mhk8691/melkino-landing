@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { isNavActive, NAV_ITEMS } from './nav-items';
 
-const NAVY = '#1a237e';
+const NAVY = '#1667ff';
 const NAVY_SOFT = 'rgba(26, 35, 126, 0.10)';
 const INACTIVE = '#6b7280';
 
@@ -49,7 +49,7 @@ export default function MobileBottomNav() {
         left: 0,
         right: 0,
         zIndex: 1000,
-        px: 1.5,
+        px: 0,
         pt: 1,
         pb: 'max(env(safe-area-inset-bottom), 10px)',
         pointerEvents: 'none',
@@ -60,11 +60,11 @@ export default function MobileBottomNav() {
         value={value}
         sx={{
           pointerEvents: 'auto',
-          height: { xs: 60, sm: 68 },
+          height: { xs: 72, sm: 76 },
           maxWidth: 560,
           mx: 'auto',
           px: 0.5,
-          borderRadius: '24px',
+          borderRadius: '28px 28px 0 0',
           backgroundColor: 'rgba(255, 255, 255, 0.92)',
           backdropFilter: 'blur(14px)',
           border: '1px solid rgba(26, 35, 126, 0.08)',
@@ -81,13 +81,13 @@ export default function MobileBottomNav() {
 
           '& .MuiBottomNavigationAction-label': {
             fontFamily: 'inherit',
-            fontSize: { xs: '0.6rem', sm: '0.68rem' },
+            fontSize: { xs: '0.7rem', sm: '0.75rem' },
             fontWeight: 500,
             lineHeight: 1.2,
             whiteSpace: 'nowrap',
             opacity: 1,
             transition: 'color .2s ease, font-weight .2s ease',
-            '&.Mui-selected': { fontSize: { xs: '0.6rem', sm: '0.68rem' }, fontWeight: 700 },
+            '&.Mui-selected': { fontSize: { xs: '0.7rem', sm: '0.75rem' }, fontWeight: 700 },
           },
 
           '& .nav-pill': {
@@ -105,6 +105,7 @@ export default function MobileBottomNav() {
             transform: 'scale(1.06)',
           },
           '& .Mui-selected': { color: NAVY },
+          '& .submit-action .nav-pill': { backgroundColor: '#1667ff', color: '#fff', width: 44, height: 44, marginTop: '-20px', borderRadius: '14px', boxShadow: '0 5px 15px #1667ff30' },
 
           // حالت فعال آیتم ثبت (وقتی منو باز است) مثل آیتم انتخاب‌شده
           '& .submit-open': {
@@ -138,7 +139,7 @@ export default function MobileBottomNav() {
                 ? { component: Link, href }
                 : {
                     onClick: handleSubmitClick,
-                    className: isSubmitMenuOpen ? 'submit-open' : undefined,
+                    className: isSubmitMenuOpen ? 'submit-action submit-open' : 'submit-action',
                     'aria-haspopup': 'menu' as const,
                     'aria-expanded': isSubmitMenuOpen,
                   })}
@@ -148,9 +149,9 @@ export default function MobileBottomNav() {
               icon={
                 <span className="nav-pill">
                   {isActive ? (
-                    <ActiveIcon sx={{ fontSize: { xs: 18, sm: 22 } }} />
+                    <ActiveIcon sx={{ fontSize: { xs: 24, sm: 26 } }} />
                   ) : (
-                    <Icon sx={{ fontSize: { xs: 18, sm: 22 } }} />
+                    <Icon sx={{ fontSize: { xs: 24, sm: 26 } }} />
                   )}
                 </span>
               }

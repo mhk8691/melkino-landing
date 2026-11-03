@@ -11,9 +11,9 @@ import React, { useState } from "react";
 import AdvancedFilterPanel from "./AdvancedFilterPanel";
 import TuneIcon from "@mui/icons-material/Tune";
 
-export default function ResponsiveFilter() {
+export default function ResponsiveFilter({ desktopFrom = "md" }: { desktopFrom?: "md" | "lg" }) {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"), { noSsr: true });
+  const isMobile = useMediaQuery(theme.breakpoints.down(desktopFrom), { noSsr: true });
   const [filterOpen, setFilterOpen] = useState(false);
   return (
     <>
@@ -42,6 +42,7 @@ export default function ResponsiveFilter() {
                   borderTopLeftRadius: 20,
                   borderTopRightRadius: 20,
                   maxHeight: "90dvh",
+                  pb: "env(safe-area-inset-bottom)",
                 },
               },
             }}
@@ -54,7 +55,7 @@ export default function ResponsiveFilter() {
           </Drawer>
         </>
       ) : (
-        <Grid size={{ md: 4, lg: 3 }}>
+        <Grid size={desktopFrom === "lg" ? { lg: 4, xl: 3 } : { md: 4, lg: 3 }}>
           <Box sx={{ position: "sticky", top: 16 }}>
             <AdvancedFilterPanel />
           </Box>
