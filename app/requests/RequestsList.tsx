@@ -3,7 +3,7 @@ import { Grid } from '@mui/material';
 import ResponsiveFilter from '../Components/Filter/ResponsiveFilter';
 import FileToolbar from '../Components/Sort/Sort';
 import CardFile from '../Components/Card/CardFile';
-import { propertyItem } from '../page';
+import { propertyItem } from '../Core/sampleData';
 
 export default function RequestsList() {
   return (

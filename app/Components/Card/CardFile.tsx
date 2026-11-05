@@ -1,5 +1,11 @@
 "use client";
 import { useState } from "react";
+import FavoriteBorderRoundedIcon from "@mui/icons-material/FavoriteBorderRounded";
+import FavoriteRoundedIcon from "@mui/icons-material/FavoriteRounded";
+import BedOutlinedIcon from "@mui/icons-material/BedOutlined";
+import SquareFootRoundedIcon from "@mui/icons-material/SquareFootRounded";
+import MoreHorizRoundedIcon from "@mui/icons-material/MoreHorizRounded";
+import showcase from "./showcase.module.css";
 import VirtualTourModal from "./VirtualTourModal";
 import * as React from "react";
 import {
@@ -40,6 +46,7 @@ import {
 
 export interface CardFileProps {
   data: PropertyType;
+  appearance?: "default" | "showcase";
   badgeLabel?: string;
   initialBookmarked?: boolean;
   isVerified?: boolean;
@@ -109,6 +116,7 @@ function InfoRow({
 
 export default function CardFile({
   data,
+  appearance = "default",
   badgeLabel,
   initialBookmarked = false,
   isVerified = false,
@@ -159,6 +167,34 @@ export default function CardFile({
     setVisitModalOpen(true);
     onVisitRequest?.(data);
   };
+
+  if (appearance === "showcase") return <>
+    <article className={showcase.card}>
+      <div className={showcase.cover}>
+        <button type="button" className={showcase.imageLink} onClick={handleDetails} aria-label={`جزئیات ${data.propertyType} در ${Array.isArray(data.neighborhood) ? data.neighborhood.join("، ") : data.neighborhood}`}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={coverImage ?? "/images/properties/hero.png"} alt={`${data.propertyType} در ${data.city}`} />
+        </button>
+        <span className={`${showcase.badge} ${data.contractType === "پیش‌فروش" ? showcase.presale : data.contractType === "رهن و اجاره" ? showcase.rent : ""}`}>{data.contractType === "رهن و اجاره" ? "اجاره" : data.contractType}</span>
+        <button type="button" className={showcase.favorite} onClick={handleBookmarkClick} aria-label={bookmarked ? "حذف از علاقه‌مندی‌ها" : "افزودن به علاقه‌مندی‌ها"} aria-pressed={bookmarked}>{bookmarked ? <FavoriteRoundedIcon /> : <FavoriteBorderRoundedIcon />}</button>
+      </div>
+      <div className={showcase.body}>
+        <button type="button" className={showcase.title} onClick={handleDetails}>{data.propertyType} {data.buildYear ? "نوساز " : ""}در {Array.isArray(data.neighborhood) ? data.neighborhood.join("، ") : data.neighborhood}</button>
+        <p className={showcase.location}><LocationOnRoundedIcon />{data.city}، {Array.isArray(data.neighborhood) ? data.neighborhood.join("، ") : data.neighborhood}</p>
+        <div className={showcase.metrics}><span><BedOutlinedIcon />{formatNumber(data.roomCount)} خواب</span><span><SquareFootRoundedIcon />{getDisplayArea(data)}</span></div>
+        <div className={showcase.footer}>
+          <button type="button" onClick={handleDetails} className={showcase.price}>{price.value} <span>تومان</span>{data.monthlyRent > 0 && <small> / {formatNumber(data.monthlyRent)} ماهانه</small>}</button>
+          <div className={showcase.advisor}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/images/profile.png" alt={personName} title={personName} />
+            <details className={showcase.more}><summary aria-label="عملیات ملک"><MoreHorizRoundedIcon /></summary><div className={showcase.menu}><button type="button" onClick={handleDetails}>مشاهده جزئیات</button><button type="button" onClick={handleViewProperty}>تور مجازی ملک</button><button type="button" onClick={handleVisitRequest}>ثبت درخواست بازدید</button></div></details>
+          </div>
+        </div>
+      </div>
+    </article>
+    <VisitRequestModal key={visitModalOpen ? "open" : "closed"} open={visitModalOpen} onClose={() => setVisitModalOpen(false)} property={data} onSubmit={async payload => { console.log("Visit request:", { ...payload, propertyId: data.id }); }} />
+    <VirtualTourModal open={virtualTourModalOpen} onClose={() => setVirtualTourModalOpen(false)} links={data.virtualTourUrl} />
+  </>;
 
   return (
     <>

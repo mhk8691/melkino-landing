@@ -7,7 +7,7 @@ import BoltRounded from "@mui/icons-material/BoltRounded";
 import { Box, Typography, Grid, Stack } from "@mui/material";
 import CardFile from "./CardFile";
 import CardFileHorizontal from "./CardFileHorizontal";
-import { propertyItem } from "@/app/page";
+import { propertyItem } from "@/app/Core/sampleData";
 import StarIcon from "@mui/icons-material/Star";
 import ApartmentIcon from "@mui/icons-material/Apartment";
 import ManageSearchIcon from "@mui/icons-material/ManageSearch";

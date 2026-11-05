@@ -66,7 +66,7 @@ const STATUSES: { key: PropertyStatus; label: string }[] = [
   { key: 'ready', label: 'آماده سکونت' },
 ]
 
-const EMPTY_FILTERS: FilterState = {
+export const EMPTY_FILTERS: FilterState = {
   dealType: 'buy',
   areaRange: [AREA_MIN, AREA_MAX],
   roomCount: 'all',
@@ -90,6 +90,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 }
 
 type Props = {
+  initialFilters?: FilterState
   resultCount?: number
   onApply?: (filters: FilterState) => void
   onClose?: () => void // فقط وقتی داخل Drawer است
@@ -98,12 +99,13 @@ type Props = {
 
 // ==================== کامپوننت اصلی ====================
 export default function AdvancedFilterPanel({
+  initialFilters,
   resultCount = 124,
   onApply,
   onClose,
   embedded = false,
 }: Props) {
-  const [filters, setFilters] = useState<FilterState>({
+  const [filters, setFilters] = useState<FilterState>(initialFilters ?? {
     dealType: 'buy',
     areaRange: [85, 280],
     roomCount: '2',

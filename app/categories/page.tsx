@@ -6,6 +6,10 @@ import CottageRounded from "@mui/icons-material/CottageRounded";
 import LandscapeRounded from "@mui/icons-material/LandscapeRounded";
 import BusinessRounded from "@mui/icons-material/BusinessRounded";
 import StorefrontRounded from "@mui/icons-material/StorefrontRounded";
+import AccountBalanceOutlined from "@mui/icons-material/AccountBalanceOutlined";
+import SpaOutlined from "@mui/icons-material/SpaOutlined";
+import PrecisionManufacturingOutlined from "@mui/icons-material/PrecisionManufacturingOutlined";
+import ConstructionOutlined from "@mui/icons-material/ConstructionOutlined";
 import ArrowBackRounded from "@mui/icons-material/ArrowBackRounded";
 import ArrowForwardRounded from "@mui/icons-material/ArrowForwardRounded";
 import styles from "./categories.module.css";
@@ -16,6 +20,11 @@ export const metadata: Metadata = {
 };
 
 const categories = [
+  { title: "ساختمان", subtitle: "فراتر از یک واحد", description: "ساختمان‌های مسکونی و چندواحدی برای نیازهای بزرگ‌تر.", Icon: BusinessRounded, color: "#254c89", tint: "#edf3ff", tag: "برای توسعه" },
+  { title: "پیش‌فروش", subtitle: "خانه فردا را امروز انتخاب کنید", description: "پروژه‌های در حال ساخت و فرصت‌های پیش‌خرید ملک.", Icon: ConstructionOutlined, color: "#d58a15", tint: "#fff5df", tag: "برای آینده" },
+  { title: "مستغلات", subtitle: "یک مجموعه، فرصت‌های بسیار", description: "املاک یکپارچه و مجموعه‌های مستقل مسکونی و تجاری.", Icon: AccountBalanceOutlined, color: "#486caa", tint: "#edf2fc", tag: "برای سرمایه‌گذاری" },
+  { title: "کشاورزی", subtitle: "نزدیک‌تر به زمین و زندگی", description: "باغ، زمین کشاورزی و فضاهای مناسب کشت و پرورش.", Icon: SpaOutlined, color: "#36934c", tint: "#eaf8ed", tag: "برای رویش" },
+  { title: "صنعتی", subtitle: "فضایی برای تولید", description: "کارگاه، کارخانه و فضاهای صنعتی برای گسترش کسب‌وکار.", Icon: PrecisionManufacturingOutlined, color: "#65658a", tint: "#f0f0f8", tag: "برای تولید" },
   { title: "آپارتمان", subtitle: "یک شروع تازه، یک خانه تازه", description: "فضایی برای زندگی روزمره؛ از خانه‌های جمع‌وجور تا آپارتمان‌های بزرگ و خانوادگی.", Icon: ApartmentRounded, color: "#1667ff", tint: "#eaf2ff", tag: "برای زندگی" },
   { title: "ویلا", subtitle: "نزدیک‌تر به آرامش", description: "خانه‌ای مستقل، حیاطی دلباز و فضایی برای لحظه‌هایی دور از شلوغی شهر.", Icon: CottageRounded, color: "#16866d", tint: "#e9f7f1", tag: "برای آرامش" },
   { title: "زمین", subtitle: "جایی برای ساختن فردا", description: "از یک قطعه زمین تا یک ایده بزرگ؛ نقطه شروعی برای ساختن آنچه در ذهن دارید.", Icon: LandscapeRounded, color: "#aa7224", tint: "#fff5e5", tag: "برای ساختن" },

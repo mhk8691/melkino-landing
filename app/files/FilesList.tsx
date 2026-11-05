@@ -2,7 +2,7 @@
 import { Grid } from "@mui/material";
 import FileToolbar from "../Components/Sort/Sort";
 import CardFile from "../Components/Card/CardFile";
-import { propertyItem } from "../page";
+import { propertyItem } from "../Core/sampleData";
 import ResponsiveFilter from "../Components/Filter/ResponsiveFilter";
 
 export default function FilesList() {

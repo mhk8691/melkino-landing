@@ -39,13 +39,13 @@ export const theme = createTheme({
     },
 
     secondary: {
-      main: '#FAAE3A',
+      main: '#ffa900',
       light: '#FBC268',
       dark: '#AF7A28',
     },
 
     background: {
-      default: '#f7f9fe',
+      default: '#f7f7ff',
       paper: '#FFFFFF',
       border: '#D4D4D2',
       

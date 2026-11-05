@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import StatsFilterBar, { FilterItem } from "../Filter/StatsFilterBar";
 import { Grid } from "@mui/material";
 import CardFile from "../Card/CardFile";
-import { propertyItem } from "@/app/page";
+import { propertyItem } from "@/app/Core/sampleData";
 
 type TabType = "all" | "buy" | "rent" | "requests";
 
